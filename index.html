@@ -1,2 +1,15 @@
+---
+layout: default
+title: Trotter Cashion
+---
+
 <h1>Trotter Cashion</h1>
-<p>hi!</p>
+
+<p class="notice">I'm currently in the process of transferring my blog to github. Old posts will be coming soon.</p>
+
+<h2>Blog</h2>
+<ul class="posts">
+  {% for post in site.posts %}
+    <li><span>{{ post.date | date_to_string }}</span>: <a href="{{ post.url }}">{{ post.title }}</a></li>
+  {% endfor %}
+</ul>
