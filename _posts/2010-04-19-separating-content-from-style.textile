@@ -1,38 +1,19 @@
 ---
 layout: post
 title: Separating Content From Style
-published: false
+published: true
 ---
 
-h1. {{ page.title }}
+h2. {{ page.title }}
 
 p(meta). April 19, 2010, Philly
 
-The modern web is built around the idea that content should be separated from
-style. As developers, we learn to write minimalistic html with no style
-information other than a few classes. This has big maintainability benefits,
-but I want to focus here on a second benefit. Separating content from style
-allows you to first focus on what you want to say, then how you want to say it.
-This is very important.
+The modern web is built around the idea that content should be separated from style. As developers, we learn to write minimalistic html with no style information other than a few classes. This has big maintainability benefits, but I want to focus here on a second benefit. Separating content from style allows you to first focus on what you want to say, then how you want to say it. This is very important.
 
-A week and a half ago, I gave a talk (TODO: LINK) at Philly ETE on Chef. As
-usual, I was stressed the weekend before as I frantically created my talk in
-Keynote like a good nerd. Beyond the normal stress of doing things last minute,
-I was also increasingly frustrated by what seemed the never ending style battle
-my brain was facing. As I laid out new content in keynote, I continually
-re-arranged it so that it would look "better". I found myself trying out
-different styles more than I did concentrating on what I wanted to tell my
-audience. Enter Scott Chacon's Showoff (TODO: LINK).
+A week and a half ago, I gave a "talk":http://trotter-chef-ete-phillyrb.heroku.com/ at "Philly ETE":http://phillyemergingtech.com/ on "Chef":http://wiki.opscode.com/display/chef/Home. As usual, I was stressed the weekend before as I frantically created my talk in Keynote like a good nerd. Beyond the normal stress of doing things last minute, I was also increasingly frustrated by what seemed the never ending style battle my brain was facing. As I laid out new content in keynote, I continually re-arranged it so that it would look "better". I found myself trying out different styles more than I did concentrating on what I wanted to tell my audience. Enter Scott Chacon's "Showoff":http://github.com/schacon/showoff.
 
-A few days before my talk preparation hell, my friend Mat (TODO: LINK)
-mentioned this hot new presentation framework called Showoff. It lets you write
-your slides in markdown (TODO: LINK), which is then translated to html when you
-run the application. Better yet, all styling is done in CSS. *This is the
-important part*. Showoff separates content from style. It lets me focus on what
-I want to say, then how I am going to say it.
+A few days before my talk preparation hell, my friend "Mat":http://matschaffer.com/ mentioned this hot new presentation framework called Showoff. It lets you write your slides in "markdown":http://daringfireball.net/projects/markdown/, which is then translated to html when you run the application. Better yet, all styling is done in CSS.
 
-Many people these days forget that the heart of what they're doing is
-communicating ideas. They focus on style over substance (TODO: Links). People
-will eventually see through style and find the substance. Make sure that what
-you do has substance. Then add your style. Using Showoff reminded me of this
-lesson, and I really appreciate it. Thanks, Scott.
+*This is the important part*. Showoff separates content from style. It lets me focus on what I want to say, then how I am going to say it.
+
+Many people these days forget that the heart of what they're doing is communicating ideas. They focus on style over substance. People will eventually see through style and find the substance. Make sure that what you do has substance. Then add your style. Using Showoff reminded me of this lesson, and I really appreciate it. Thanks, Scott.
