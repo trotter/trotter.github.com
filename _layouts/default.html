@@ -2,8 +2,32 @@
 <html>
 <head>
   <title>{{ page.title }}</title>
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
 </head>
 <body>
-  {{ content }}
+  <div class="header">
+    <h1>Trotter Cashion</h1>
+  </div>
+  <div class="content">
+    <p class="notice">
+    I'm currently in the process of transferring my blog to github. Old posts
+    will be transferred over soon.
+    </p>
+
+    {{ content }}
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Senior Developer at Hoopla</li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <br class="clearing" />
+  </div>
 </body>
 </html>
