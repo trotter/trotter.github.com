@@ -5,10 +5,10 @@ layout: nil
 <feed xmlns="http://www.w3.org/2005/Atom">
  
  <title>Trotter Cashion</title>
- <link href="http://trotter.github.com/feed/atom.xml" rel="self"/>
- <link href="http://trotter.github.com/"/>
+ <link href="http://feeds.feedburner.com/trottercashion" rel="self"/>
+ <link href="http://www.trottercashion.com/"/>
  <updated>{{ site.time | date_to_xmlschema }}</updated>
- <id>http://trotter.github.com/</id>
+ <id>http://www.trottercashion.com/</id>
  <author>
    <name>Trotter Cashion</name>
    <email>cashion@gmail.com</email>
@@ -17,9 +17,9 @@ layout: nil
  {% for post in site.posts %}
  <entry>
    <title>{{ post.title }}</title>
-   <link href="http://trotter.github.com{{ post.url }}"/>
+   <link href="http://www.trottercashion.com{{ post.url }}"/>
    <updated>{{ post.date | date_to_xmlschema }}</updated>
-   <id>http://trotter.github.com{{ post.id }}</id>
+   <id>http://www.trottercashion.com{{ post.id }}</id>
    <content type="html">{{ post.content | xml_escape }}</content>
  </entry>
  {% endfor %}
