@@ -55,6 +55,11 @@ ul.posts li:before {
   float: left;
 }
 
+.footer p {
+  float: right;
+  margin-right: 10px;
+}
+
 a {
   color: #333;
 }
