@@ -5,7 +5,7 @@ layout: nil
 <feed xmlns="http://www.w3.org/2005/Atom">
  
  <title>Trotter Cashion</title>
- <link href="http://trotter.github.com/atom.xml" rel="self"/>
+ <link href="http://trotter.github.com/feed/atom.xml" rel="self"/>
  <link href="http://trotter.github.com/"/>
  <updated>{{ site.time | date_to_xmlschema }}</updated>
  <id>http://trotter.github.com/</id>
