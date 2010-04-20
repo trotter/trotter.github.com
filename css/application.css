@@ -1,5 +1,5 @@
 body {
-  font-family: sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 h1, h2 {
@@ -8,6 +8,7 @@ h1, h2 {
 }
 
 h2 {
+  font-size: 1.4em;
   color: #c00;
 }
 
@@ -34,6 +35,10 @@ ul.posts li:before {
 
 .header {
   border-bottom: 1px solid #000;
+}
+
+.header h1 a {
+  text-decoration: none;
 }
 
 .footer {
@@ -63,4 +68,9 @@ a:hover {
   padding: 0;
   font-size: small;
   border-bottom: 1px solid #ccc;
+}
+
+#post {
+  line-height: 1.4em;
+  font-size: large;
 }
