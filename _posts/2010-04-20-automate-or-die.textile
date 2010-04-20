@@ -1,0 +1,26 @@
+---
+layout: post
+title: Automate or Die
+published: false
+---
+
+h2. {{ Page.title }}
+
+p(meta). April 20, 2010 - Philly
+
+Making something people want to buy and automating the creation of that something are the two most important things you can do for your company. These two concepts address the two ways in which a company makes money. First, you provide (and charge for) value to the customer. Second, you reduce your costs enough to profit. 
+
+
+
+Automation is the second most important thing you can do for your company. The first, making something people want to buy, is a topic for another post. 
+
+
+A few years ago, I took some basic business classes as part of a "certificate program":http://executiveeducation.wharton.upenn.edu/semester-programs/wharton-programs-for-working-professionals/index.cfm here in Philly. The last class in this program is on business strategy and uses this "Capsim":http://www.capsim.com/ game in which you're in charge of a fictional company trying to make the big bucks. As a fun twist, you 
+
+
+I'm one of those "business minded" developers that occasionally crop up and talk about process and doing things right. 
+
+
+ The "Chef talk":http://trotter-chef-ete-phillyrb.heroku.com/ that I've been giving recently at places like "Philly.rb":http://phillyrb.org, pushes this idea. 
+
+
