@@ -1,0 +1,17 @@
+---
+layout: post
+title: Philly ETE
+published: true
+---
+
+h2. {{ Page.title }}
+
+p(meta). April 20, 2010 - Philly
+
+Two weeks ago, I spoke at "Philly ETE":http://phillyemergingtech.com/. Let me say here, publicly, that this conference completely rocked. First, the conference organizers picked a "great location":http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=Sheraton+hotel+Society+Hill&sll=39.948931,-75.151162&sspn=0.018457,0.037894&ie=UTF8&hq=Sheraton+hotel&hnear=Society+Hill&ll=39.947335,-75.143781&spn=0.008817,0.018947&t=h&z=16&iwloc=A in the heart of Philly's Old City. Second, they convinced "many":http://yehudakatz.com/ "great":http://dablog.rubypal.com/ "speakers":http://twitter.com/unclebobmartin from around the country to come speak. Third, they highlighted "excellent":http://cbcg.net/ "local":http://asymmetrical-view.com/ "talent":http://www.aaronfeng.com/. Finally, they really took care of the speakers and made sure that we had everything we needed.
+
+I can't stress that last point enough. At many conferences, the speakers are expected to magically appear, give a talk, then disappear to whence they came. With Philly ETE, the organizers actually offered to get me a hotel room (I declined on account of living twelve blocks from the venue). Touches like this make a good conference great. When a speaker knows he has nothing to worry about, he is free to focus on one thing: crafting a great talk. The only conference I've seen do things better than Philly ETE in this respect is "Goruco":http://www.goruco.com, which offers speakers both a travel stipend and an honorarium.
+
+So, well done Philly ETE. I really appreciated your committment to making a good conference great and your fantastic selection of talks. I rarely spent time in the hallway track, which is amazing for a conference of your size. I'll definitely be back next year, speaking or not.
+
+P.S. - "Goruco registration":http://goruco.stagehq.com/ is open now and half sold out. Go buy a ticket. It's the best regional ruby conference. Evar.

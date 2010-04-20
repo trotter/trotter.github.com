@@ -6,7 +6,7 @@ published: true
 
 h2. {{ page.title }}
 
-p(meta). April 19, 2010, Philly
+p(meta). April 19, 2010 - Philly
 
 The modern web is built around the idea that content should be separated from style. As developers, we learn to write minimalistic html with no style information other than a few classes. This has big maintainability benefits, but I want to focus here on a second benefit. Separating content from style allows you to first focus on what you want to say, then how you want to say it. This is very important.
 
