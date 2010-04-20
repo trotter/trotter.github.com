@@ -22,7 +22,7 @@ ul.posts li:before {
   content: "\00BB \0020";
 }
 
-p, .posts li {
+#post p, .posts li {
   line-height: 1.4em;
 }
 
