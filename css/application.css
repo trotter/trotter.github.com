@@ -74,3 +74,12 @@ a:hover {
   line-height: 1.4em;
   font-size: large;
 }
+
+#post a {
+  text-decoration: none;
+  color: #00f;
+}
+
+#post a:hover {
+  text-decoration: underline;
+}
