@@ -22,6 +22,10 @@ ul.posts li:before {
   content: "\00BB \0020";
 }
 
+p, .posts li {
+  line-height: 1.4em;
+}
+
 .notice {
   background-color: #ffeeaa;
   border: 1px solid #ddcc99;
@@ -71,7 +75,6 @@ a:hover {
 }
 
 #post {
-  line-height: 1.4em;
   font-size: large;
 }
 
