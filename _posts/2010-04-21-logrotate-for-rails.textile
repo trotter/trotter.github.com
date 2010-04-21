@@ -20,6 +20,6 @@ bc. /srv/our_app/current/log/*.log {
 
 The first line tells logrotate where our logs are. The last line tells logrotate to copy the log file then truncate the existing file in place. This is important because rails isn't down with flipping the file handle (we think).
 
-On a unixy system, place the above text in a file called @our_app@ in the @/etc/logrotate.d@ directory. Then make it owned by @roo@. Logrotate will now rotate your rails logs each night.
+On a unixy system, place the above text in a file called @our_app@ in the @/etc/logrotate.d@ directory. Then make it owned by @root@. Logrotate will now rotate your rails logs each night.
 
 Neat!
