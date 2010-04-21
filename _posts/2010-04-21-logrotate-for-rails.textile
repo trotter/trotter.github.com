@@ -1,0 +1,25 @@
+---
+layout: post
+title: Logrotate For Rails
+published: true
+---
+
+h2. {{ page.title }}
+
+p(meta). April 21, 2010 - Philly
+
+"Mat":http://matschaffer.com and I have been setting up a beta server recently and decided that we should actually rotate our logs. Thankfully, Mat knew enough about "logrotate":http://linux.die.net/man/8/logrotate. Since I didn't know jack about logrotate before yesterday, I figure it's probably worth explaining to you as well. So without further ado, here's our logrotate conf for our rails app:
+
+bc. /srv/our_app/current/log {
+  daily          # rotate daily
+  rotate 12      # keep twelve copies
+  compress       # gzip the old files
+  missingok      # don't barf if there is no log
+  copytruncate
+}
+
+The first line tells logrotate where our logs are. The last line tells logrotate to copy the log file then truncate the existing file in place. This is important because rails isn't down with flipping the file handle (we think).
+
+On a unixy system, place the above text in a file called @our_app@ in the @/etc/logrotate.d@ directory. Logrotate will now rotate your logs each night.
+
+Neat!

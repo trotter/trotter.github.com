@@ -1,0 +1,10 @@
+---
+layout: post
+title: The Case For Chef
+published: false
+---
+
+h2. {{ page.title }}
+p(meta). April 21, 2010 - Philly
+
+I like "Chef":LINK. I've been using it for nearly six months for all provisioning that I do. Before Chef, I wrote a bash framework for system provisioning called Tenderizer. It still lives within the walls of Algorithmics, but it's really nowhere near as good as Chef. That said, getting started with Chef can be difficult. The "wiki":LINK is full of information, but it can be a little difficult to grok. In this post, I'll try to
