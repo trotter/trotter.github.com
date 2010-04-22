@@ -4,7 +4,7 @@ title: Philly ETE
 published: true
 ---
 
-h2. {{ Page.title }}
+h2. {{ page.title }}
 
 p(meta). April 20, 2010 - Philly
 
