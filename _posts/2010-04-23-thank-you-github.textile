@@ -1,0 +1,17 @@
+---
+layout: post
+title: Thank You Github
+published: true
+---
+
+h2. {{ page.title }}
+
+p(meta). April 20, 2010 - Philly
+
+"Yesterday's post":/2010/04/22/i-heart-raphael.html was apparently pretty popular. If you look at the image below, you'll see that over the past 24 hours (there's no timestamp, so just trust me), I had 9,001 visits and 10,101 page views. Given that my previous high was around 50, I'm a little excited.
+
+!/images/2010-04-23-analytics.jpg!
+
+As some of you may remember from "Monday's post":/2010/04/19/separating-content-from-style.html, I'm a fan of separating content from style. This is where "Github":http://github.com comes in. I'm hosting my blog there using mojombo's "jekyll":http://github.com/mojombo/jekyll, a static site generator written in Ruby.
+
+Much of what I like about "showoff":http://github.com/schacon/showoff is what I like about jekyll as well. When I'm working on the content, there's nothing else on my mind. It's just me, a terminal, and this post. I'm able to focus on what I want to say with no other distractions. As a bonus, Github's "pages":http://pages.github.com/ service will generate a static copy and host it for me. This meant no headaches yesterday. I was free to happily watch my traffic grow. Thanks Github, you make life better in so many ways.
