@@ -91,3 +91,9 @@ a:hover {
 #post a:hover {
   text-decoration: underline;
 }
+
+.highlight {
+  padding: 5px;
+  background: #ddd;
+  border: 1px solid #aaa;
+}
