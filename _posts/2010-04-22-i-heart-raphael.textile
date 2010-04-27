@@ -70,3 +70,5 @@ setInterval(function () {
 Definitely take note of the fact that "jQuery":http://jquery.com can be used to manipulate the svg nodes. That's been very helpful to us when adding hovers and other cool effects. 
 
 If you want to get started with Raphael, have a look at their "documentation":http://raphaeljs.com/reference.html for all the functions available. I highly recommend it as an easy to use, cross platform drawing library. Hell, it even runs on the iPad and iPhone :-)
+
+*Update:* I've written a "follow-up post":/2010/04/27/headless-raphael-testing.html that shows how to unit test Raphael libraries.
