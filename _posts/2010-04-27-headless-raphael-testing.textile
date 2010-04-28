@@ -116,7 +116,7 @@ So now let's take a look at the implementation:
   // in ./explosion/lib/yourlib.js
 
   var Explosion = function (div) {
-    this.r = new Raphael(div, 400, 200);
+    this.r = Raphael(div, 400, 200);
     this.labels = {};
     this.drawText();
   };
@@ -167,7 +167,7 @@ Hopefully this post has shown that it is possible to do headless testing of grap
 
 <script type="text/javascript">
 var Explosion = function (div) {
-  this.r = new Raphael(div, 400, 200);
+  this.r = Raphael(div, 400, 200);
   this.labels = {};
   this.drawText();
 };
