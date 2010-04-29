@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Introducing Chuusha
-published: false
+published: true
 ---
 
 h2. {{ page.title }}
@@ -10,6 +10,58 @@ p(meta). April 29, 2010 - Philly
 
 CSS doesn't have variables. This probably doesn't come as news to you, and I'm sure you've felt the pain. What's even worse, now that I'm doing a lot of drawing using Raphael, I have color and size constants that I'm sharing between CSS and JavaScript. It's really brittle, and brittle is bad.
 
-So how can we fix this problem? "Sass":http://sass-lang.com/ is one option, and it's pretty damn sweet. Sadly, it too can't share variables with JavaScript, and it's ever so slightly divergent from CSS. I don't like forcing my team members (especially the designery types) to learn too many new things. Like any good developer, I wrote my own library! (Be sure to read that last sentence with all the sarcasm it deserves)
+So how can we fix this problem? "Sass":http://sass-lang.com/ is one option, and it's pretty damn sweet. Sadly, it too can't share variables with JavaScript, and it's ever so slightly divergent from CSS. I don't like forcing my team members (especially the designery types) to learn too many new things. So like any good developer, I wrote my own library! (Be sure to read that last sentence with all the sarcasm it deserves) Don't worry though, you won't have to learn anything new to use it.
 
+Chuusha is "Rack":http://rack.rubyforge.org/ middleware that pre-renders css and javascript erb templates. Erb is the default templating engine for Rails, which means that if you can do rails views, you can use Chuusha. All you need to do is change your file extension from .css or .js to .css.erb or .js.erb (to be honest, anything in public with a .erb can be rendered with Chuusha). So let's have a look at what this means with a simple template:
 
+{% highlight css %}
+/* ./public/stylesheets/application.css.erb */
+
+<% highlight_color = "#3c3cff" %>
+
+p.highlight {
+  color: <%= highlight_color %>;
+}
+
+img.highlight {
+  border: 1px solid <% highlight_color %>;
+}
+{% endhighlight %}
+
+As you can see, we're able to share @highlight_color@ (a nice shade of blue), with two different elements in our stylesheet. Of course, this doesn't show off sharing @highlight_color@ with anything in javascript. For that, we need to take a look at how Chuusha gets loaded:
+
+{% highlight ruby %}
+# ./config.ru
+
+require 'chuusha'
+PUBLIC_DIR = File.dirname(__FILE__) + '/public'
+use Chuusha::Rack, PUBLIC_DIR,
+    { :variables => { :highlight_color => "#3c3cff" }}
+run Rack::URLMap.new("/" => YOUR_RAILS_APP::Application)
+{% endhighlight %}
+
+As you can see, we're passing a configuration hash to Chuusha. This hash contains a variables key, which we can use to store a set of constants that we want to share between css and javascript.
+
+With Chuusha properly loaded, we can now use highlight_color in any of our templates like so:
+
+{% highlight js %}
+// ./public/javascripts/application.js.erb
+var r = Raphael("draw-here"),      // Init Raphael
+    rect = r.rect(20, 20, 50, 50), // Make a 50x50 rect
+    rect.attr({"fill": <% highlight_color %>}) // Color it
+{% endhighlight %}
+
+As the configuration hash grows in size, it's good to put it somewhere other than in your rackup config. For this reason, Chuusha can also accept a path to a yaml configuration doc via a string:
+
+{% highlight ruby %}
+use Chuusha::Rack, PUBLIC_DIR, File.dirname(__FILE__) + '/chuusha.yml'
+{% endhighlight %}
+
+... and the yaml...
+
+{% highlight yaml %}
+variables:
+  highlight_color: "#3c3cff"
+{% endhighlight %}
+
+# TODO, tell how to install Chuusha
