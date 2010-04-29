@@ -78,29 +78,31 @@ So about that Raphael mock... let's take a look at how it's implemented:
 
 {% highlight js %}
 var Raphael = function () {
+  var self = {
+    attr: function () {
+      return this;
+    },
+
+    text: function () {
+      // store text calls
+      var args = Array.prototype.slice.call(arguments, 0);
+      Raphael.textCalls.push(args);
+      return this;
+    },
+
+    animate: function () {
+      // store animate calls
+      var args = Array.prototype.slice.call(arguments, 0);
+      Raphael.animateCalls.push(args);
+      return this;
+    }
+  };
+
   Raphael.textCalls = Raphael.textCalls || [];
   Raphael.animateCalls = Raphael.animateCalls || [];
+
+  return self;
 };
-
-Raphael.prototype = {
-  attr: function () {
-    return this;
-  },
-
-  text: function () {
-    // store text calls
-    var args = Array.prototype.slice.call(arguments, 0);
-    Raphael.textCalls.push(args);
-    return this;
-  },
-
-  animate: function () {
-    // store animate calls
-    var args = Array.prototype.slice.call(arguments, 0);
-    Raphael.animateCalls.push(args);
-    return this;
-  }
-}
 
 Raphael.clear = function () {
   Raphael.textCalls = [];

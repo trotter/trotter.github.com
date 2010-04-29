@@ -1,5 +1,5 @@
 var Explosion = function (div) {
-  this.r = new Raphael(div, 400, 200);
+  this.r = Raphael(div, 400, 200);
   this.labels = {};
   this.drawText();
 };
