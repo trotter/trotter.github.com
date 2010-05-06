@@ -1,0 +1,67 @@
+---
+layout: post
+title: Recorder Mock Makes JS Testing Easier
+published: true
+---
+
+h2. {{ page.title }}
+
+p(meta). May 6, 2010 - Philly
+
+After reading last week's post on "headless raphael testing":/2010/04/27/headless-raphael-testing.html, my buddy Mat said, "that mock is ugly and repetitive." Thankfully, he then went out and wrote "RecorderMock.js":http://github.com/matschaffer/recorderMock.js and wrote a "blog post":http://matschaffer.com/2010/04/mock-jquery-javascript-libraries/ about it. In light of his awesome, I'm going to show how to use RecorderMock.js to replace the ugly mock from my earlier post.
+
+First, we're going to remove the old Raphael mock that we wrote in the last post. Here's the old code:
+
+{% highlight js %}
+var Raphael = function () {
+  var self = {
+    attr: function () {
+      return this;
+    },
+
+    text: function () {
+      // store text calls
+      var args = Array.prototype.slice.call(arguments, 0);
+      Raphael.textCalls.push(args);
+      return this;
+    },
+
+    animate: function () {
+      // store animate calls
+      var args = Array.prototype.slice.call(arguments, 0);
+      Raphael.animateCalls.push(args);
+      return this;
+    }
+  };
+
+  Raphael.textCalls = Raphael.textCalls || [];
+  Raphael.animateCalls = Raphael.animateCalls || [];
+
+  return self;
+};
+
+Raphael.clear = function () {
+  Raphael.textCalls = [];
+  Raphael.animateCalls = [];
+};
+{% endhighlight %}
+
+The new code is a much simpler one liner:
+
+{% highlight js %}
+Raphael = recorderMock("text", "animate", "attr");
+{% endhighlight %}
+
+As a bonus, that one line gives us a more functionality than before, in that we can now inspect attr calls as well.
+
+RecorderMock.js has a slightly different interface than our earlier mock, so we'll need to change the test code as well. That file is pretty large, so I'm only going to show the difference.
+
+{% highlight diff %}
+- var text = Raphael.textCalls;
++ var text = Raphael.text.__calls;
+
+- var animate = Raphael.animateCalls;
++ var animate = Raphael.animate.__calls;
+{% endhighlight %}
+
+In addition, all usages of @text[n]@ need to be replaces with @text[n].arguments@, because RecorderMock.js stores more than just the arguments of the call. You can do cool things likes @Raphael.attr.__calls[0].previous@ to retrieve the node on which @attr@ was called. That's a pretty handy feature for determining if you're setting the correct text node's color to black.

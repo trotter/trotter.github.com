@@ -163,6 +163,7 @@ $ jspec --rhino     # Run the tests each time we change a file
 
 Hopefully this post has shown that it is possible to do headless testing of graphical Javascript libraries. As I said before, we're using this strategy heavily, and it's working great for us. By mocking out Raphael (and jQuery) we're able to run our entire test suite headless in less than a second. That means we can code awesome, graphically rich sites in a fraction of the time it takes other people. I think that's pretty awesome.
 
+*Update:* I've written a "follow-up post":/2010/05/06/recorder-mock-makes-js-testing-easier.html showing how to use "Mat's":http://matschaffer.com "RecorderMock.js":http://github.com/matschaffer/recorderMock.js to clean up the Raphael mock.
 
 <script type="text/javascript" src="/javascripts/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="/javascripts/raphael-1.3.2-min.js"></script>
