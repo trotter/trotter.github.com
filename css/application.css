@@ -8,6 +8,10 @@ h1, h2 {
 }
 
 h2 {
+  font-size: 2em;
+}
+
+h1 {
   font-size: 1.4em;
   color: #c00;
 }
@@ -41,7 +45,7 @@ ul.posts li:before {
   border-bottom: 1px solid #000;
 }
 
-.header h1 a {
+.header h2 a {
   text-decoration: none;
 }
 

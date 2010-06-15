@@ -4,7 +4,7 @@ title: Automate or Die
 published: false
 ---
 
-h2. {{ Page.title }}
+h1. {{ Page.title }}
 
 p(meta). April 20, 2010 - Philly
 

@@ -4,7 +4,7 @@ title: Thoughts of NOSQL Summer
 published: true
 ---
 
-h2. {{ page.title }}
+h1. {{ page.title }}
 
 p(meta). June 15, 2010 - Philly
 
