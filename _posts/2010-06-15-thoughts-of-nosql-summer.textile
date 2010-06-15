@@ -1,0 +1,15 @@
+---
+layout: post
+title: Thoughts of NOSQL Summer
+published: true
+---
+
+h2. {{ page.title }}
+
+p(meta). June 15, 2010 - Philly
+
+I'm taking part in the "Philly chapter":http://nosqlsummer.org/city/philadelphia of "NOSQL Summer":http://nosqlsummer.org/ and recently read the "BASE paper":http://nosqlsummer.org/paper/base-vs-acid, which is our first "assignment". In the paper, Dan Pritchett makes the assertion that any service's uptime is the product of its uptime and the uptimes of all the services on which it depends. This means that even if your application server has an uptime of 99.999%, two database shards an uptime of 99% each will bring your overall application availability down to 98%. As you increase the number of shards, your overall uptime will continue to decrease.
+
+At its root, the decrease in uptime is a result of a coupling problem. As a service becomes temporally coupled to more services, the probability of it being available is the probability that both its own code is available and the service it depends on is available. Thankfully, BASE provides a way to reduce this temporal coupling. Its approach of "basically available, soft state, eventually consistent" accepts that different data stores can become temporarily out of sync, but ensures that they will eventually become consistent.
+
+I'm by no means a BASE expert at this point, but I'm really digging NOSQL Summer so far. Our first meeting is tomorrow, and the paper lineup so far looks fantastic. If there's no NOSQL Summer chapter in your area, you should definitely start one. I think it'll make for a great summer and help us prepare our applications for the highly available world.
