@@ -1,0 +1,13 @@
+---
+layout: post
+title: "NOSQL Summer: Eventually Consistent"
+published: true
+---
+
+h1. {{ page.title }}
+
+Last night was Philly's first "NOSQL Summer":http://nosqlsummer.org/ meeting, and it totally rocked. We packed a 45th floor of the "Comcast Center":http://en.wikipedia.org/wiki/Comcast_Center_(office_building) with 18 people ready and willing to talk about Dan Pritchett's "BASE paper":http://nosqlsummer.org/paper/base-vs-acid. The conversation was really good, and I definitely feel like I learned more than I would have by reading the paper without discussion. If you're interested, our next meeting is June 30th, and we'll be covering Leslie Lamport's "The Byzantine Generals Problem":http://nosqlsummer.org/paper/byzantine-generals.
+
+Of course, I got a little overachiever for last night's meeting and also read through Werner Vogel's paper "Eventually Consistent":http://nosqlsummer.org/paper/eventually-consistent. It dovetails quite nicely with the BASE paper and helps to illustrate that the tradeoff between consistency and availability is not binary. Indeed, there are varying levels of eventual consistency that can be demanded (such as read-your-writes and session consistency), which will then result in more or less availability. Another interesting part of the paper explains how you can have strong consistency without actually writing to all nodes. As long as the number of nodes to which you immediately replicate data and the number of nodes from which you read is greater than the number of nodes total (R+W>N), you will never read stale data, because at least one read will always overlap with the a good write. Any cases where R+W <= N then result in eventual consistency. It's important to note that R+W can be an ever changing number, as network partitions may affect how many nodes are available at a given time and therefore affect how many write or read nodes you require. Overall, I think this paper is an easy read that can help the beginner understand eventual consistency before trying a more difficult paper like Amazon's Dynamo.
+
+As you may be able to imagine, I'm quite excited about NOSQL Summer. I hope even more of you come to the next Philly meeting. I'm sure we'll continue to learn a lot over the course of this summer.
