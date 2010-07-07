@@ -53,10 +53,14 @@ ul.posts li:before {
   border-top: 5px solid #c00;
   background: #ddd;
   font-size: small;
+  padding: 10px;
+  width: 680px;
 }
 
-.footer ul {
+.footer ul, .footer a {
   float: left;
+  padding: 0;
+  margin: 0 10px 0 0;
 }
 
 .footer p {
