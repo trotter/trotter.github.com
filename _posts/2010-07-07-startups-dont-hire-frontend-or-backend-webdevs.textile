@@ -1,0 +1,13 @@
+---
+layout: post
+title: "Startups: Don't Hire Frontend or Backend Webdevs"
+published: true
+---
+
+h1. {{ page.title }}
+
+I'm tired of seeing job postings asking for frontend or backend web developers. Most small startups (by which I mean fewer than 20 people) don't have enough work to justify splitting the team into frontend and backend components. Instead, you're better off splitting your team into subteams for each feature that needs to be completed. Within these subteams, one member may be better at Javascript and the other at ActiveRecord, but they should all be competent in both. I've yet to see a company hire a developer that *only* does Javascript, HTML, and CSS who isn't soon asked to do Ruby, PHP, or Python.
+
+Of course, there are exceptions to this rule. For one, you may be writing a website with a really small frontend component and a giant API. However, you'd still be an idiot for hiring a frontend developer to manage that one component. You'd be much better off getting one of your kickass API developers to spend a little time on the website portion, which would free salary space to hire another kickass API developer.
+
+In summary, the distinction of frontend vs backend doesn't make sense for small companies. Everyone is expected to wear many hats at a startup, so there's not really a chance that your roles will be segmented that well. Instead post job listings asking for a skilled web developer. Then you'll get what you actually need.
