@@ -8,7 +8,7 @@ h1. {{ page.title }}
 
 p(meta). April 27, 2010 - Philly
 
-I'm going to debunk two popular myths today: Testing Javascript outside the browser is impossible and testing graphics libraries is impossible. At Hoopla, "Mat":http://matschaffer.com and I have found through experience that these myths are untrue. We have a test suite running 157 tests in "jSpec":http://visionmedia.github.com/jspec/ and "Rhino":http://www.mozilla.org/rhino/ that tests every graph and chart that we draw on our site. Today, I'm going to show you how to unit test the code for this (be sure to click the box):
+I'm going to debunk two popular myths today: Testing Javascript outside the browser is impossible and testing graphics libraries is impossible. At <a href="http://hoopla.net">Hoopla</a>, "Mat":http://matschaffer.com and I have found through experience that these myths are untrue. We have a test suite running 157 tests in "jSpec":http://visionmedia.github.com/jspec/ and "Rhino":http://www.mozilla.org/rhino/ that tests every graph and chart that we draw on our site. Today, I'm going to show you how to unit test the code for this (be sure to click the box):
 
 <div id="draw-here-explosion" style="height: 200px; width: 400px; background: #ccf;">
 </div>
@@ -110,7 +110,7 @@ Raphael.clear = function () {
 };
 {% endhighlight %}
 
-As you can see, this mock just stores the various method invocations into arrays. In the implementation below, you'll see us make calls to @text()@ and @animate()@. On the page, these will be called on Raphael proper. In tests, they will be called on our Raphael mock, where we'll store the invocation and assert that it was called correctly. This allows us to run these test without an actual browser, because we never actually use the real Raphael library in our code. Similarly, this approach can be applied to jQuery (something that infact do at Hoopla).
+As you can see, this mock just stores the various method invocations into arrays. In the implementation below, you'll see us make calls to @text()@ and @animate()@. On the page, these will be called on Raphael proper. In tests, they will be called on our Raphael mock, where we'll store the invocation and assert that it was called correctly. This allows us to run these test without an actual browser, because we never actually use the real Raphael library in our code. Similarly, this approach can be applied to jQuery (something that infact do at <a href="http://hoopla.net">Hoopla</a>).
 
 So now let's take a look at the implementation:
 

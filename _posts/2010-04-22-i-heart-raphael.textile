@@ -8,7 +8,7 @@ h1. {{ page.title }}
 
 p(meta). April 22, 2010 - Philly
 
-I know all the hype these days is around HTML5's canvas, but can I talk up SVG for a sec? That shit rocks. Here at Hoopla, we have a number of info graphics on our site like charts and bar graphs and whatnot. They need to be generated on the fly using data from our database. As we saw it, we had two options: flash or javascript. Flash was a no-go, because it would be one more thing for developers on the team to know. Canvas was out on account of its lack of support in IE. SVG on the other hand... well, "Raphael":http://raphaeljs.com/ (a kickass javascript library) gives cross browser SVG support that works all the way back to IE6. Total Win!
+I know all the hype these days is around HTML5's canvas, but can I talk up SVG for a sec? That shit rocks. Here at <a href="http://hoopla.net">Hoopla</a>, we have a number of info graphics on our site like charts and bar graphs and whatnot. They need to be generated on the fly using data from our database. As we saw it, we had two options: flash or javascript. Flash was a no-go, because it would be one more thing for developers on the team to know. Canvas was out on account of its lack of support in IE. SVG on the other hand... well, "Raphael":http://raphaeljs.com/ (a kickass javascript library) gives cross browser SVG support that works all the way back to IE6. Total Win!
 
 As an added benefit, it turns out that Raphael is crazy easy to work with. Let's have a look at a small example (be sure to hover over the square):
 
