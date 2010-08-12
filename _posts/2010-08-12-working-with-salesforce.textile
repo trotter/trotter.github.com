@@ -1,0 +1,32 @@
+---
+layout: post
+title: Working With Salesforce
+published: false
+---
+
+h1. {{ page.title }}
+
+For the past six months, I've been working at <a href="http://hoopla.net">Hoopla Software</a> writing applications to be sold on Salesforce's <a href="http://sites.force.com/appexchange/results?type=Apps&keywords=Hoopla">AppExchange</a>. The first five months were spent writing a Rails app that interfaced with Salesforce using their API, the last month has been spent writing native Apex code (which is a delight that can only be described in relation to the circles of hell). Consider this a "lesson's learned" type post.
+
+h2. A Little Background
+
+h3. Everyone's a Snowflake
+
+h3. The Benefits
+
+h2. The Salesforce API
+
+h3. Ruby Adapters
+
+h3. Our Solutions
+
+h2. Working With Apex
+
+h3. The Tools
+
+h3. Debugging is Evil
+
+h3. It's Fast
+
+h2. Let's Make It Better
+
