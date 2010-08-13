@@ -6,13 +6,15 @@ published: false
 
 h1. {{ page.title }}
 
-For the past six months, I've been working at <a href="http://hoopla.net">Hoopla Software</a> writing applications to be sold on Salesforce's <a href="http://sites.force.com/appexchange/results?type=Apps&keywords=Hoopla">AppExchange</a>. The first five months were spent writing a Rails app that interfaced with Salesforce using their API, the last month has been spent writing native Apex code (which is a delight that can only be described in relation to the circles of hell). Consider this a "lesson's learned" type post.
+For the past six months, I've been working at "Hoopla Software":http://hoopla.net writing applications to be sold on Salesforce's "AppExchange":http://sites.force.com/appexchange/results?type=Apps&keywords=Hoopla. The first five months were spent writing a Rails app that interfaced with Salesforce using their API, the last month has been spent writing native Apex code (which is a delight that can only be described in relation to the circles of hell). Consider this a "lesson's learned" type post.
 
-h2. A Little Background
+h2. About AppExchange
 
-h3. Everyone's a Snowflake
+"Salesforce.com":http://www.salesforce.com/ is much, much more than a simple CRM. It's more like a giant database, on the Internet. When a company signs up, they essentially get their own set of tables that correspond to common sales related things: Opportunities, Accounts, Leads, etc. Over 50,000 companies have found this valuable and paid them an incredibly large amount of money to use it. To make things even more enticing, Salesforce has developed a fairly rich API and a hosted code solution, called Apex, that allows developers to build custom extensions on top of the Salesforce Platform. Developers can release their applications on Salesforce's AppExchange, which can be thought of as similar to Apple's App Store. Alternately, developers can create one-off extensions for individual companies that install directly into that company's instance of Salesforce.
 
-h3. The Benefits
+For something like the App Exchange to work at scale, developers need to know there is a common installation target (think the iPhone to Apple's App Store). Unfortunately, every instance of Salesforce CRM is its own little snowflake. Take the value of an opportunity for instance. Though there is an @Amount@ field on @Opportunity@, companies regularly forgo using this amount in favor of splitting the value of the opportunity along various product groups such as recurring revenue and one-off revenue. Also take quotas. Companies only get quotas if they pay Salesforce more money, so not everyone has them. To get around this restriction, some companies will add their own custom fields for storing quotas, which Salesforce will let them do in the cheaper version.
+
+Extreme customizability like this is not a problem in itself, but it becomes a problem when you're a developer trying to sell a general purpose application that makes use of quotas on the App Exchange. You can either code your application to only support the standard Amount field and Salesforce's quotas and thereby drastically reduce your overall market, or you can handle every edge case and turn your code into a massive soup of special cases. Neither is a really happy option.
 
 h2. The Salesforce API
 
