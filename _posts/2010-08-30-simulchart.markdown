@@ -10,7 +10,7 @@ This past weekend was [node knockout](http://nodeknockout.com/), so @matschaffer
 @thoughtmerchant and I teamed up to create [Simulchart](http://awesometown.no.de/),
 a platform for creating realtime charts that you can embed anywhere:
 
-<iframe src="http://awesometown.no.de/graphs/4c7ade49a8a5514232000001/iframe?width=700&height=200" frameBorder="0" style="width: 700px; height: 200px;"> </iframe>
+<iframe src="http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003?width=700&height=200" frameBorder="0" style="width: 700px; height: 200px;"> </iframe>
 
 ## Sending Data
 
@@ -18,10 +18,10 @@ What I really like about Simulcharts is how easy it is to send data to the
 chart. To change the values in the chart above, all you need to do is run the following on your command line:
 
     curl -d value=342 \
-      http://awesometown.no.de/graphs/4c7ade49a8a5514232000001/appendValue
+      http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/appendValue
 
 That will send send a `POST` to
-`http://awesometown.no.de/graphs/4c7ade49a8a5514232000001/appendValue` with a
+`http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/appendValue` with a
 post body of `value=342`. If you run that command right now, you will see the chart move.
 
 Alternately, you could write a Ruby, Java, Python, or
