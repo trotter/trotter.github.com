@@ -7,7 +7,7 @@ published: true
 # {{ page.title }}
 
 This past weekend was [node knockout](http://nodeknockout.com/), so @matschaffer and
-@thoughtmerchant and I teamed up to create [Simulchart](http://awesometown.no.de/),
+@thoughtmerchant and I teamed up to create [Simulchart](http://simulchart.com/),
 a platform for creating realtime charts that you can embed anywhere:
 
 <iframe src="http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/iframe?width=700&height=200" frameBorder="0" style="width: 700px; height: 200px;"> </iframe>
@@ -36,5 +36,5 @@ more tweaking.
 
 Overall, I'm really proud of what we managed to accomplish in just one weekend. My team was rock solid, and I think our entry will only improve as a product over time. Sadly, we did run into a few scaling issues with node, which we were never able to fully figure out. So if you're not seeing a graph, be sure to reload the page. It'll show up after a few requests.
 
-If you like what we made, please, please vote us highly one our [team page](http://nodeknockout.com/teams/awesometown). We really appreciate your support, and your votes will help us validate that Simulcharts is something we should develop further. Also, look forward to more posts this week about how we implemented certain features and how to do a system load chart like we have on our [demo page](http://awesometown.no.de/demos).
+If you like what we made, please, please vote us highly one our [team page](http://nodeknockout.com/teams/awesometown). We really appreciate your support, and your votes will help us validate that Simulcharts is something we should develop further. Also, look forward to more posts this week about how we implemented certain features and how to do a system load chart like we have on our [demo page](http://simulchart.com/demos).
 
