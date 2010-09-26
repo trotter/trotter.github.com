@@ -1,1 +1,55 @@
 pygments: true
+
+books:
+  - date: 27 Aug 2010
+    title: Service-Oriented Design with Ruby and Rails
+    authors: Paul Dix
+    contribution: Wrote the Security chapter and did technical review
+    url: http://www.amazon.com/Service-Oriented-Design-Rails-Addison-Wesley-Professional/dp/0321659368/ref=sr_1_1?s=gateway&ie=UTF8&qid=1285530573&sr=8-1
+  - date: 26 Nov 2007
+    title: The Rails Way
+    authors: Obie Fernandez
+    contribution: Wrote the ActiveRecord chapter
+    url: http://www.amazon.com/Rails-Way-Obie-Fernandez/dp/0321445619/ref=sr_1_1?s=gateway&ie=UTF8&qid=1285530521&sr=8-1
+  - date:  13 Apr 2007
+    title: Rails Refactoring to Resources
+    authors: Trotter Cashion
+    contribution: Wrote it
+    url: http://www.amazon.com/Rails-Refactoring-Resources-Digital-ebook/dp/B000RH0EHA/ref=sr_1_1?s=gateway&ie=UTF8&qid=1285530383&sr=8-1
+
+talks:
+  - date: 14 Oct 2010
+    title: Automate or Die
+    url: http://strangeloop2010.com/talks/14483
+    conference_name: Strange Loop 2010
+    conference_url: http://strangeloop2010.com/
+  - date: 12 Oct 2010
+    title: Squashing the Heisenbugs With Chef
+    url: http://www.chariotsolutions.com/events/ci
+    conference_name: Continuous Integration for the Enterprise
+    conference_url: http://www.chariotsolutions.com/events/ci
+  - date: 23 Jul 2010
+    title: "Unit Tests Aren't Enough!"
+    url: http://trotter-cucumber-oscon.heroku.com/#1
+    conference_name: OSCON 2010
+    conference_url: http://www.oscon.com
+  - date: 22 Jul 2010
+    title: "Cooking Your Way to Happiness: System Provisioning with Chef"
+    url: http://trotter-chef-oscon.heroku.com/#1
+    conference_name: OSCON 2010
+    conference_url: http://www.oscon.com
+  - date: 9 Apr 2010
+    title: "Chef: Saving Time (and Money) With Automated Provisioning"
+    url: http://trotter-chef-ete-phillyrb.heroku.com/
+    conference_name: Philly ETE
+    conference_url: http://phillyemergingtech.com/
+  - date: 17 Sep 2007
+    title: Refactoring Rails
+    url: "http://conferences.oreillynet.com/cs/railseurope2007/view/e_sess/14232"
+    conference_name: RailsConf Europe 2007
+    conference_url: http://www.railsconfeurope.com/railseurope2007/
+  - date: 21 Apr 2007
+    title: Contexts, Mocks, and Stubs, oh my!
+    url: "#"
+    conference_name: Goruco 2007
+    conference_url: http://www.goruco.com/

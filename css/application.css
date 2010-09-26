@@ -22,11 +22,23 @@ ul {
   padding-left: 1em;
 }
 
-ul.posts li:before {
+ul.posts li:before, ul.accomplishments li.first:before {
   content: "\00BB \0020";
 }
 
-#post p, .posts li {
+ul.accomplishments {
+  padding-left: 0;
+}
+
+ul.accomplishments li li {
+  margin-left: 2em;
+}
+
+ul.accomplishments li li.first {
+  margin-left: 0;
+}
+
+#post p, .posts li, .books li, .talks li {
   line-height: 1.4em;
 }
 

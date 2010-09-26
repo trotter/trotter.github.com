@@ -9,3 +9,37 @@ title: Trotter Cashion
     <li><span>{{ post.date | date_to_string }}</span> &ndash; <a href="{{ post.url }}">{{ post.title }}</a></li>
   {% endfor %}
 </ul>
+
+<h2>Books</h2>
+<ul class="books accomplishments">
+  {% for book in site.books %}
+  <li>
+    <ul>
+      <li class="first">
+        <span>{{ book.date }}</span> &ndash;
+        <a href="{{ book.url }}">{{ book.title }}</a> by {{ book.authors }}
+      </li>
+      <li>
+        {{ book.contribution }}.
+      </li>
+    </ul>
+  </li>
+  {% endfor %}
+</ul>
+
+<h2>Talks</h2>
+<ul class="talks accomplishments">
+  {% for talk in site.talks %}
+  <li>
+    <ul>
+      <li class="first">
+        <span>{{ talk.date }}</span> &ndash;
+        <a href="{{ talk.url }}">{{ talk.title }}</a>
+      </li>
+      <li>
+        Given at <a href="{{ talk.conference_url }}">{{ talk.conference_name }}</a>
+      </li>
+    </ul>
+  </li>
+  {% endfor %}
+</ul>
