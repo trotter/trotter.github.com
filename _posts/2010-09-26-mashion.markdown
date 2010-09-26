@@ -1,0 +1,81 @@
+---
+layout: post
+title: Starting a Company
+published: true
+---
+
+# {{ page.title }}
+
+So that's that, [Mat](http://matschaffer.com) and I have officially started a
+company. It's a Rails / Javascript / anything else consulting company named
+[Mashion](http://mashion.net). We officially start tomorrow, but we've been
+working the past two weeks to build up a little bit of business.
+
+## Companies Are Work
+
+As I'm starting to find out, running a business is hard work. Over the past two
+weeks, Mat and I incorporated a company, started discussions with potential
+clients, got a company credit card, and started to plan our strategy at night
+while finishing our final two weeks at our old jobs as developers at
+[Hoopla](http://hoopla.net). It feels like we've had a meeting every night for
+the past two weeks with yet another person looking for some Rails or Javascript
+help. I'm really looking forward to next week, when not _all_ of our client
+discussions have to be done on off hours.
+
+As you may imagine, starting a company and finding clients really comes down to
+task management. To stay on top of things, it's absolutely essential that you
+have a good customer relationship management tool into which you put *every
+last bit* of customer data. We're using [Highrise](http://highrisehq.com), and
+it totally rocks. After spending 7 months developing applications for
+Salesforce, Highrise is a breath of fresh air. So far, its strongest two
+features are that it'll properly file anything you email to it and it puts
+pictures next to client names. ![Contact
+Picture](/images/2010-09-26-mashion/pictures-with-contacts.jpg) I love having a
+picture next to a name (which you can see over to the right), because it really
+helps me think of these names on a webpage as people that I know.
+
+## I'm Terrified
+
+Starting a company is completely terrifying. We've lined up a few weeks of work
+now, but I'm still afraid that the pipeline will dry up on a moment's notice.
+We're currently a small fish in a giant pond, where a
+[number](http://pivotallabs.com/) of [successful](http://hashrocket.com)
+[companies](thoughtbot.com) are already established. Outside the stress of
+competition, the economy could always decide to tank again. I try not to think
+about that, but it's a pretty real possibility. So yea, this could completely
+blow up in my face, and that has me scared pretty shitless.
+
+## We're Qualified
+
+However, I'm not going to let the fear drive me away. I think we can beat (or
+better yet: work with) the big guys in certain cases. We're a tiny company, but
+we're extremely talented. When a client needs a chisel instead of a sledge
+hammer, we'll be there.
+
+We've spent the past our lives learning everything we can and subconsciously
+preparing for this moment. The [talks](/talks) I've given, the [books](/books)
+I've written, and [work I've done](/work) have all lead to this. We are
+definitely Rails and Javascript experts, and we'll help any team learn to
+perform at its full potential.
+
+## Our Future
+
+With our future starting now, our primary focus is on finding more clients.  We
+want companies and teams that need help improving their development process or
+kickstarting a new product and think that we can give them the boost they need.
+If you're interested, [email me](mailto://trotter@mashion.net).
+
+After lining up some clients, we also want to spend a little time on products.
+[Simulchart](http://simulchart.com) has been sitting neglected for the past
+month and is in need of some development love. Our hope is to turn it into a
+for pay product by the end of the year. After that, we've got a million other
+small product ideas in mind, and I can't wait to show them to you.
+
+## The Beginning
+
+Overall, this feels like the best career decision I've ever made. It's
+simultaneously terrifying and exciting, but I can't think of a better reason to
+live with permanent butterflies in my stomach. No matter what happens, Mat and
+I are going to make the best of this experience and come out better for it.
+Besides, if all else fails, at least I'm going to get to work on some cool
+stuff. Isn't that what all programmers dream of anyway?
