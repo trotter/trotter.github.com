@@ -40,7 +40,7 @@ Starting a company is completely terrifying. We've lined up a few weeks of work
 now, but I'm still afraid that the pipeline will dry up on a moment's notice.
 We're currently a small fish in a giant pond, where a
 [number](http://pivotallabs.com/) of [successful](http://hashrocket.com)
-[companies](thoughtbot.com) are already established. Outside the stress of
+[companies](http://thoughtbot.com) are already established. Outside the stress of
 competition, the economy could always decide to tank again. I try not to think
 about that, but it's a pretty real possibility. So yea, this could completely
 blow up in my face, and that has me scared pretty shitless.
@@ -53,8 +53,8 @@ we're extremely talented. When a client needs a chisel instead of a sledge
 hammer, we'll be there.
 
 We've spent the past our lives learning everything we can and subconsciously
-preparing for this moment. The [talks](/talks) I've given, the [books](/books)
-I've written, and [work I've done](/work) have all lead to this. We are
+preparing for this moment. The [talks I've given, the books
+I've written](/), and work I've done have all lead to this. We are
 definitely Rails and Javascript experts, and we'll help any team learn to
 perform at its full potential.
 
@@ -63,7 +63,7 @@ perform at its full potential.
 With our future starting now, our primary focus is on finding more clients.  We
 want companies and teams that need help improving their development process or
 kickstarting a new product and think that we can give them the boost they need.
-If you're interested, [email me](mailto://trotter@mashion.net).
+If you're interested, [email me](mailto:trotter@mashion.net).
 
 After lining up some clients, we also want to spend a little time on products.
 [Simulchart](http://simulchart.com) has been sitting neglected for the past
