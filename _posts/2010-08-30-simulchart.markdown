@@ -10,7 +10,7 @@ This past weekend was [node knockout](http://nodeknockout.com/), so @matschaffer
 @thoughtmerchant and I teamed up to create [Simulchart](http://simulchart.com/),
 a platform for creating realtime charts that you can embed anywhere:
 
-<iframe src="http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/iframe?width=700&height=200" frameBorder="0" style="width: 700px; height: 200px;"> </iframe>
+<iframe src="http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/iframe?width=700&amp;height=200" frameBorder="0" style="width: 700px; height: 200px;"> </iframe>
 
 ## Sending Data
 
