@@ -77,6 +77,6 @@ We bill hourly, because we think that fixed price contracts always leave one
 side feeling screwed. We have two developers and average 30 hours per week per
 developer.
 
-We're not designers, but we have [one we like](http://thoughtmerchants.com/).
+We aren't designers, but we have [one we like](http://thoughtmerchants.com/).
 
 We're really good, and we're proud of it.
