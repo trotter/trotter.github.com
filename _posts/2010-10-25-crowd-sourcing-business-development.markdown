@@ -51,7 +51,7 @@ about those times: [@cashion](http://twitter.com/cashion) and
 [@matschaffer](http://twitter.com/matschaffer).
 
 If you're a potential client yourself, you can get a 10% discount by showing up
-and signing a contract. If we're offering a bounty, you can get a 15% discount
+with a contract ready to sign. If we're offering a bounty, you can get a 15% discount
 by being the first to sign a contract that starts immediately.
 
 We charge $150 per hour and stay away from fixed-price contracts.
