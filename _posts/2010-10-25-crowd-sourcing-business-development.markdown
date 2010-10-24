@@ -17,7 +17,7 @@ for real. Please leave some feedback.
 [Mashion](http://mashion.net), my web development consultancy, will pay you 5%
 for introducing us to someone that becomes a client. We will pay you 10% if you
 negotiate the contract for us. Occasionally, we'll pay you 15% when we're
-looking for work immediately. We charge around $150 per hour and average around
+looking for work immediately. We charge $150 per hour and average around
 30 hours of work per week per developer. Ergo, if you deliver us a four week
 contract for two developers, you'll make **$3,600**. For serious.
 
