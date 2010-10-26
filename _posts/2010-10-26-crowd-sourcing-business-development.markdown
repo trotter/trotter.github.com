@@ -56,6 +56,9 @@ If you've got some work that you want to send our way, email us at
 respond. Don't worry, we love you for sending us work, and we will *definitely*
 write back.
 
+Oh, and if you're a lawyer, please contact us about writing actual contracts
+around this business.
+
 About Us
 --------
 
