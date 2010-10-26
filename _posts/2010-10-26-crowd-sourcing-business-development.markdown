@@ -1,18 +1,12 @@
 ---
 layout: post
 title: Crowd Sourcing Business Development
-published: false
+published: true
 ---
 
 # {{ page.title }}
 
-<p class="meta">October 25, 2010 - Philly</p>
-
-Draft
------
-
-This post is currently a draft. I'm looking for feedback before publicizing it
-for real. Please leave some feedback.
+<p class="meta">October 26, 2010 - Philly</p>
 
 [Mashion](http://mashion.net), my web development consultancy, will pay you 5%
 for introducing us to someone that becomes a client. We will pay you 10% if you
