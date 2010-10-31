@@ -117,6 +117,7 @@ a:hover {
 }
 
 .highlight {
+  margin-bottom: 1em;
   padding: 5px;
   background: #ddd;
   border: 1px solid #aaa;
