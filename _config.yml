@@ -18,11 +18,11 @@ books:
     url: http://www.amazon.com/Rails-Refactoring-Resources-Digital-ebook/dp/B000RH0EHA/ref=sr_1_1?s=gateway&ie=UTF8&qid=1285530383&sr=8-1
 
 talks:
-#  - date: 1 Dec 2010
-#    title: Squashing the Heisenbugs With Chef
-#    url: http://www.chariotsolutions.com/events/ci
-#    conference_name: Continuous Integration for the Enterprise
-#    conference_url: http://www.chariotsolutions.com/events/ci
+  - date: 1 Dec 2010
+    title: Squashing the Heisenbugs With Chef
+    url: http://www.slideshare.net/trotter/squashing-the-heisenbugs
+    conference_name: Continuous Integration for the Enterprise
+    conference_url: http://www.chariotsolutions.com/events/ci
   - date: 14 Oct 2010
     title: Automate or Die
     url: http://www.slideshare.net/trotter/automate-or-die
