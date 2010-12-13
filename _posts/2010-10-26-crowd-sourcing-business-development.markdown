@@ -8,6 +8,9 @@ published: true
 
 <p class="meta">October 26, 2010 - Philly</p>
 
+*Update*: The deal below is no longer active. I'm leaving this blog post on the
+web though as a matter of historical record.
+
 [Mashion](http://mashion.net), my web development consultancy, will pay you 5%
 for introducing us to someone that becomes a client. We will pay you 10% if you
 negotiate the contract for us. Occasionally, we'll pay you 15% when we're
@@ -77,3 +80,4 @@ developer.
 We aren't designers, but we have [one we like](http://thoughtmerchants.com/).
 
 We're really good, and we're proud of it.
+
