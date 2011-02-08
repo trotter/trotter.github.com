@@ -51,7 +51,7 @@ closures, whereas normal Ruby methods are not. For instance, we could use
 {% highlight ruby %}
     class Callbacker
       def make_callback(obj, meth)
-        define_method(:callback) { obj.send(meth, self) }
+        self.send(:define_method, :callback) { obj.send(meth) }
       end
     end
 
