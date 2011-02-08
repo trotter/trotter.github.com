@@ -34,7 +34,7 @@ duplication like so:
 {% highlight ruby %}
     # With define_method:
     %w(user email food).each do |meth|
-      define_method(:meth) { @data[meth.to_sym] }
+      define_method(meth) { @data[meth.to_sym] }
     end
 {% endhighlight %}
 
