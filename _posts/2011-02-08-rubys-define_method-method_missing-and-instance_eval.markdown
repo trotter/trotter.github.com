@@ -51,7 +51,10 @@ closures, whereas normal Ruby methods are not. For instance, we could use
 {% highlight ruby %}
     class Callbacker
       def make_callback(obj, meth)
-        self.send(:define_method, :callback) { obj.send(meth) }
+        metaclass = class << self; self; end
+        metaclass.send(:define_method, :callback) do
+          obj.send(meth)
+        end
       end
     end
 
@@ -62,8 +65,14 @@ closures, whereas normal Ruby methods are not. For instance, we could use
 {% endhighlight %}
 
 Sadly, that example is quite contrived, but it's all I've got off the top of my
-head. If you can think of something better, leave it in the comments. I'll
-update the post with your example and name.
+head. You'll also notice that I'm calling `define_method` on the metaclass for
+the object itself. I have to do this because `define_method` is defined on
+`Class`, not `object`. By defining it on the metaclass instead of the object's
+class, I can ensure that each object can have its own callback function.
+
+All that said, this example is a little too complex for my taste. If you can
+think of something better, leave it in the comments. I'll update the post with
+your example and name.
 
 ## method_missing
 
