@@ -18,6 +18,11 @@ books:
     url: http://www.amazon.com/Rails-Refactoring-Resources-Digital-ebook/dp/B000RH0EHA/ref=sr_1_1?s=gateway&ie=UTF8&qid=1285530383&sr=8-1
 
 talks:
+  - date: 1 Apr 2011
+    title: Raphael and You
+    url: http://www.slideshare.net/trotter/raphal-rubynation
+    conference_name: Ruby Nation 2011
+    conference_url: http://rubynation.org
   - date: 1 Dec 2010
     title: Squashing the Heisenbugs With Chef
     url: http://www.slideshare.net/trotter/squashing-the-heisenbugs
