@@ -6,7 +6,7 @@ published: true
 
 # {{ page.title }}
 
-<p class="meta">February 08, 2010 - Philly</p>
+<p class="meta">February 08, 2011 - Philly</p>
 
 One of the things that I love most about Ruby is that it gets you part of the
 way to Lisp. Sure, it doesn't have full on macros, but it does have a number of
