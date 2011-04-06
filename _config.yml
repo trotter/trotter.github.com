@@ -1,4 +1,5 @@
 pygments: true
+lsi: true
 
 books:
   - date: 27 Aug 2010
