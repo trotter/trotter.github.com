@@ -10,5 +10,6 @@ task :publish do
   sh "git read-tree #{tsha}:generated"
   tsha = `git write-tree`.chomp
   csha = `echo 'updated' | git commit-tree #{tsha}`.chomp
-  sh "git update-ref refs/heads/generated #{csha}"
+  sh "git update-ref refs/heads/master #{csha}"
+  sh "git push -f origin master"
 end
