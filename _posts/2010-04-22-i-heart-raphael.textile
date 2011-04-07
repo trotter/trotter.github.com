@@ -1,6 +1,6 @@
 ---
 layout: post
-title: I <3 Raphael
+title: I &lt;3 Raphael
 published: true
 ---
 
