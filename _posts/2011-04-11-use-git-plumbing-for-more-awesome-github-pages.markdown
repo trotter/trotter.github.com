@@ -12,8 +12,9 @@ published: true
 blog or documentation, but I've been having a small problem with mine lately.
 My bounce rates on this blog are higher than I'd like, so I started using
 Jekyll's `related_posts` feature to let people know there's more they might
-want to read. Unfortunately, GitHub disables `lsi` when building your Jekyll
-blog, because it requires more processing power than they'd like to spend.
+want to read. Unfortunately, GitHub disables `lsi`, which gives good cross-post
+recommendations, when building your Jekyll blog, because it requires more
+processing power than they'd like to spend.
 
 Thankfully, Scott Chacon gave a [fantastic talk](http://threetrees.heroku.com/#1)
 at RubyNation a week ago that covered some neat git plumbing tricks to solve my
