@@ -1,5 +1,6 @@
 require 'fileutils'
 
+desc "Publish the blog"
 task :publish do
   FileUtils.rm_rf('/tmp/trotter-blog-index')
   ENV['GIT_INDEX_FILE'] = '/tmp/trotter-blog-index'
