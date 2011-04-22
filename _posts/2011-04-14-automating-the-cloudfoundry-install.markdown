@@ -15,7 +15,7 @@ totally awesome, but as the
 it takes a while to get it installed and setup. Since I don't like waiting, I
 transformed that README into a simple bash script that will handle everything
 for you. It's available now on [my
-fork](https://github.com/trotter/vcap/tree/fix-install-process). It takes
+fork](https://github.com/trotter/vcap/tree/fix-install-process-part-deux). It takes
 nearly an hour to run, but only requires manual intervention when entering the
 sudo password (which only happens twice). With this script, getting up and
 running with CloudFoundry is as simple as downloading [Ubuntu
