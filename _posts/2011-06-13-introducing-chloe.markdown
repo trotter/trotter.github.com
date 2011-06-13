@@ -10,9 +10,11 @@ Developing for the realtime web is hard. It's not that the concepts are
 terribly hard, or the coding in particular, rather it's the operational
 difficulties of handling tens of thousands of concurrent requests without
 having your web server fall over. In an attempt to solve this problem, I've
-created an open source, realtime web server called [Chloe](https://github.com/mashion/chloe), which
-vastly simplifies the problem of connecting your existing web app to the
-realtime web. It supports a hybrid of the Socket.IO and Faye APIs, and requires
+created an open source, realtime web server called
+[Chloe](https://github.com/mashion/chloe), which vastly simplifies the problem
+of connecting your existing web app to the realtime web. It works over
+WebSockets, but falls back to xhr or long polling when the browser can't handle
+WebSockets.  It supports a hybrid of the Socket.IO and Faye APIs, and requires
 nothing special from your application other than the ability to send and
 receive HTTP POSTs.
 
