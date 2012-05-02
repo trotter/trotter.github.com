@@ -115,6 +115,7 @@ a:hover {
 
 #post img {
   float: right;
+  margin-bottom: 1em;
 }
 
 .highlight {
