@@ -74,9 +74,9 @@ If you hit this error, make sure that you ran the last two lines above:
 
 # Upload certificate
 
-Our final step is to upload our public key to amazon. First, open the
+Our final step is to upload our certificate to amazon. First, open the
 file and copy the contents. If you're on a mac, you can do this by
-running `cat pk-amazon.pem | pbcopy` from the command line. Next, go
+running `cat cert-amazon.pem | pbcopy` from the command line. Next, go
 back to your AWS console, click on your user, and choose the "Security
 Credentials" tab in the info window. Click the "Manage Signing
 Certificates" button, followed by "Upload Signing Certificates" in the
