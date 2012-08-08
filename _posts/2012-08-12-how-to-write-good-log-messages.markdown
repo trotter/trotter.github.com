@@ -74,6 +74,12 @@ leads to lines that look like this:
 This seems like a perfectly accessible approach to me, but it's not one that
 I've experimented with yet.
 
+Also, it is worth pointing out that determining the file and line number for
+the location component _may_ slow down your program. If this is the case in
+your language of choice, you may want to use something like
+`class_name:method_name` instead. As long as it helps you get back to a place
+in code, use whatever you want for location.
+
 So what are your thoughts on log messages? If I've left out anything that you
 find particularly important, please let me know in the comments. I'm always
 looking for ways to improve my logging.
