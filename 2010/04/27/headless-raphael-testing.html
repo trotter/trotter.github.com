@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Headless Raphael Testing</title>
+  <link href="http://feeds.feedburner.com/trottercashion" rel="alternate" title="Trotter Cashion" type="application/atom+xml" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
+  <meta name="bitly-verification" content="04b77a0a381e"/>
+</head>
+<body>
+  <div class="header">
+    <h2><a href="/">Trotter Cashion</a></h2>
+  </div>
+  <div class="content">
+    <div id="post">
+  <h1>Headless Raphael Testing</h1>
+<p class="meta">April 27, 2010 &#8211; Philly</p>
+<p>I&#8217;m going to debunk two popular myths today: Testing Javascript outside the browser is impossible and testing graphics libraries is impossible. At <a href="http://hoopla.net">Hoopla</a>, <a href="http://matschaffer.com">Mat</a> and I have found through experience that these myths are untrue. We have a test suite running 157 tests in <a href="http://visionmedia.github.com/jspec/">jSpec</a> and <a href="http://www.mozilla.org/rhino/">Rhino</a> that tests every graph and chart that we draw on our site. Today, I&#8217;m going to show you how to unit test the code for this (be sure to click the box):</p>
+<div id="draw-here-explosion" style="height: 200px; width: 400px; background: #ccf;">
+</div>
+<p>First, you&#8217;re going to need the JSpec gem, which includes Rhino with it. Assuming you have Ruby installed, run this on your command line:</p>
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span>gem install jspec
+</code></pre>
+</div>
+<p>Now we need to setup a jspec directory:</p>
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span>jspec init explosion
+</code></pre>
+</div>
+<p>Awesome, now let&#8217;s make a test file:</p>
+<div class="highlight"><pre><code class="js"><span class="c1">// in ./explosion/spec/unit/spec.js</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Explosion&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">explosion</span><span class="p">;</span>
+
+  <span class="nx">before_each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Raphael is a mock, we&#39;ll discuss that in a minute</span>
+    <span class="nx">Raphael</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+
+    <span class="c1">// Make our explosion object</span>
+    <span class="nx">explosion</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Explosion</span><span class="p">(</span><span class="s2">&quot;explosion-draw-here&quot;</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should draw the text on init&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// textCalls will give us all the textCalls we made.</span>
+    <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span><span class="p">;</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">to</span><span class="p">(</span><span class="nx">eql</span><span class="p">,</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;Raphael&quot;</span><span class="p">]);</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">text</span><span class="p">[</span><span class="mi">1</span><span class="p">]).</span><span class="nx">to</span><span class="p">(</span><span class="nx">eql</span><span class="p">,</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="s2">&quot;Awesome!&quot;</span><span class="p">]);</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should explode&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">explosion</span><span class="p">.</span><span class="nx">explode</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">animate</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span><span class="p">;</span>
+
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">animate</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">to</span><span class="p">(</span><span class="nx">eql</span><span class="p">,</span> <span class="p">[{</span><span class="nx">rotation</span><span class="o">:</span> <span class="mi">90</span><span class="p">,</span>  <span class="nx">x</span><span class="o">:</span> <span class="mi">30</span><span class="p">,</span>  <span class="nx">y</span><span class="o">:</span> <span class="mi">30</span><span class="p">},</span>
+                                <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;bounce&quot;</span><span class="p">]);</span>
+    <span class="c1">// We only test the first three args, because testing </span>
+    <span class="c1">// the callback is too hard for this example :-)</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">animate</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">)).</span><span class="nx">to</span><span class="p">(</span><span class="nx">eql</span><span class="p">,</span> 
+      <span class="p">[{</span><span class="nx">rotation</span><span class="o">:</span> <span class="mi">180</span><span class="p">,</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">300</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">170</span><span class="p">},</span> <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;&lt;&gt;&quot;</span><span class="p">]);</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should reform&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">explosion</span><span class="p">.</span><span class="nx">reform</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">animate</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span><span class="p">;</span>
+
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">animate</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">to</span><span class="p">(</span><span class="nx">eql</span><span class="p">,</span> <span class="p">[{</span><span class="nx">rotation</span><span class="o">:</span> <span class="mi">360</span><span class="p">,</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">100</span><span class="p">},</span>
+                                <span class="mi">1300</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">]);</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">animate</span><span class="p">[</span><span class="mi">1</span><span class="p">]).</span><span class="nx">to</span><span class="p">(</span><span class="nx">eql</span><span class="p">,</span> <span class="p">[{</span><span class="nx">rotation</span><span class="o">:</span> <span class="mi">360</span><span class="p">,</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">120</span><span class="p">},</span>
+                                <span class="mi">1300</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">]);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+<p>There&#8217;s a few things going on above. First, we&#8217;re setting up our Raphael mock at the beginning of each test. We&#8217;ll define the mock in a minute, but suffice to say that we&#8217;re not going to <em>actually</em> call Raphael in our test. Second, we have three tests. The first tests that we wrote out some text, the second that we can explode, and the third that we will reform. A number of constants are hardcoded here for purposes of simplifying the example, but in real life code hardcoding is bad.</p>
+<p>So about that Raphael mock&#8230; let&#8217;s take a look at how it&#8217;s implemented:</p>
+<div class="highlight"><pre><code class="js"><span class="kd">var</span> <span class="nx">Raphael</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">attr</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">text</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// store text calls</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">animate</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// store animate calls</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span> <span class="o">||</span> <span class="p">[];</span>
+  <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span> <span class="o">||</span> <span class="p">[];</span>
+
+  <span class="k">return</span> <span class="nx">self</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Raphael</span><span class="p">.</span><span class="nx">clear</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="p">};</span>
+</code></pre>
+</div>
+<p>As you can see, this mock just stores the various method invocations into arrays. In the implementation below, you&#8217;ll see us make calls to <code>text()</code> and <code>animate()</code>. On the page, these will be called on Raphael proper. In tests, they will be called on our Raphael mock, where we&#8217;ll store the invocation and assert that it was called correctly. This allows us to run these test without an actual browser, because we never actually use the real Raphael library in our code. Similarly, this approach can be applied to jQuery (something that infact do at <a href="http://hoopla.net">Hoopla</a>).</p>
+<p>So now let&#8217;s take a look at the implementation:</p>
+<div class="highlight"><pre><code class="js">  <span class="c1">// in ./explosion/lib/yourlib.js</span>
+
+  <span class="kd">var</span> <span class="nx">Explosion</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">div</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">r</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">(</span><span class="nx">div</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">labels</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">drawText</span><span class="p">();</span>
+  <span class="p">};</span>
+
+  <span class="nx">Explosion</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">drawText</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">labels</span><span class="p">.</span><span class="nx">raphael</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">r</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;Raphael&quot;</span><span class="p">).</span>
+        <span class="nx">attr</span><span class="p">({</span><span class="nx">font</span><span class="o">:</span> <span class="s2">&quot;14px Helvetica, Arial, sans-serif&quot;</span><span class="p">});</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">labels</span><span class="p">.</span><span class="nx">awesome</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">r</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="s2">&quot;Awesome!&quot;</span><span class="p">).</span>
+        <span class="nx">attr</span><span class="p">({</span><span class="nx">font</span><span class="o">:</span> <span class="s2">&quot;14px Helvetica, Arial, sans-serif&quot;</span><span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="nx">explode</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">labels</span><span class="p">.</span><span class="nx">raphael</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span><span class="nx">rotation</span><span class="o">:</span> <span class="mi">90</span><span class="p">,</span>  <span class="nx">x</span><span class="o">:</span> <span class="mi">30</span><span class="p">,</span>  <span class="nx">y</span><span class="o">:</span> <span class="mi">30</span><span class="p">},</span>
+                                  <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;bounce&quot;</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">labels</span><span class="p">.</span><span class="nx">awesome</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span><span class="nx">rotation</span><span class="o">:</span> <span class="mi">180</span><span class="p">,</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">300</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">170</span><span class="p">},</span>
+                                  <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;&lt;&gt;&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">reform</span><span class="p">();</span>
+        <span class="p">},</span> <span class="mi">400</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="nx">reform</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">labels</span><span class="p">.</span><span class="nx">raphael</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span><span class="nx">rotation</span><span class="o">:</span> <span class="mi">360</span><span class="p">,</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">100</span><span class="p">},</span>
+                                  <span class="mi">1300</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">labels</span><span class="p">.</span><span class="nx">awesome</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span><span class="nx">rotation</span><span class="o">:</span> <span class="mi">360</span><span class="p">,</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">120</span><span class="p">},</span>
+                                  <span class="mi">1300</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+</code></pre>
+</div>
+<p>Much like <a href="/2010/04/22/i-heart-raphael.html">last week&#8217;s post</a>, we initialize a Raphael object and use it to draw. The three functions from the test are here. We <strong>know</strong> they work because of the unit tests.</p>
+<p>The final step is to run the tests:</p>
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span>jspec run --rhino <span class="c"># Run the tests once</span>
+<span class="nv">$ </span>jspec --rhino     <span class="c"># Run the tests each time we change a file</span>
+</code></pre>
+</div>
+<p>Hopefully this post has shown that it is possible to do headless testing of graphical Javascript libraries. As I said before, we&#8217;re using this strategy heavily, and it&#8217;s working great for us. By mocking out Raphael (and jQuery) we&#8217;re able to run our entire test suite headless in less than a second. That means we can code awesome, graphically rich sites in a fraction of the time it takes other people. I think that&#8217;s pretty awesome.</p>
+<p><strong>Update:</strong> I&#8217;ve written a <a href="/2010/05/06/recorder-mock-makes-js-testing-easier.html">follow-up post</a> showing how to use <a href="http://matschaffer.com">Mat&#8217;s</a> <a href="http://github.com/matschaffer/recorderMock.js">RecorderMock.js</a> to clean up the Raphael mock.</p>
+<script type="text/javascript" src="/javascripts/jquery-1.4.2.min.js"></script><script type="text/javascript" src="/javascripts/raphael-1.3.2-min.js"></script><script type="text/javascript">
+var Explosion = function (div) {
+  this.r = Raphael(div, 400, 200);
+  this.labels = {};
+  this.drawText();
+};
+
+Explosion.prototype = {
+  drawText: function () {
+    this.labels.raphael = this.r.text(200, 100, "Raphael").
+      attr({font: "14px Helvetica, Arial, sans-serif"});
+    this.labels.awesome = this.r.text(200, 120, "Awesome!").
+      attr({font: "14px Helvetica, Arial, sans-serif"});
+  },
+
+  explode: function () {
+    var self = this;
+    this.labels.raphael.animate({rotation: 90,  x: 30,  y: 30}, 1000, "bounce");
+    this.labels.awesome.animate({rotation: 180, x: 300, y: 170}, 1000, "<>", function () {
+      setTimeout(function () {
+        self.reform();
+      }, 400);
+    });
+  },
+
+  reform: function () {
+    this.labels.raphael.animate({rotation: 360, x: 200, y: 100}, 1300, "<");
+    this.labels.awesome.animate({rotation: 360, x: 200, y: 120}, 1300, ">");
+  }
+};
+
+  var explosion = new Explosion('draw-here-explosion');
+  $('#draw-here-explosion').bind('click', function () {
+    explosion.explode()
+  });
+</script>
+
+  <div id="related">
+    <h3>Related Posts</h3>
+    <ul class="posts">
+      
+      <li><span>06 May 2010</span> &raquo; <a href="/2010/05/06/recorder-mock-makes-js-testing-easier.html">Recorder Mock Makes JS Testing Easier</a></li>
+      
+      <li><span>08 Feb 2011</span> &raquo; <a href="/2011/02/08/rubys-define_method-method_missing-and-instance_eval.html">Ruby's define_method, method_missing, and instance_eval</a></li>
+      
+      <li><span>22 Apr 2010</span> &raquo; <a href="/2010/04/22/i-heart-raphael.html">I &lt;3 Raphael</a></li>
+      
+    </ul>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /**
+      * var disqus_identifier; [Optional but recommended: Define a unique identifier (e.g. post id or slug) for this thread] 
+      */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = 'http://trottercashion.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=trottercashion">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Co-founder of <a href="http://mashion.net">Mashion</a></li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <p>
+      <a href="http://feeds.feedburner.com/trottercashion" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="vertical-align:middle;border:0"/></a>
+    </p>
+    <br class="clearing" />
+    
+  </div>
+
+  <!-- google analytics -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3670698-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <!-- get clicky -->
+  <script type="text/javascript">
+  var clicky = { log: function(){ return; }, goal: function(){ return; }};
+  var clicky_site_id = 210101;
+  (function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = ( document.location.protocol == 'https:' ? 'https://static.getclicky.com' : 'http://static.getclicky.com' ) + '/js';
+    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+  })();
+  </script>
+  <a title="Web Analytics" href="http://getclicky.com/210101"></a>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/210101ns.gif" /></p></noscript>
+</body>
+</html>

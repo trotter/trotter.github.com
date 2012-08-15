@@ -1,0 +1,126 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2 {
+  padding: 0;
+  margin: 0;
+  clear: both;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h1 {
+  font-size: 1.4em;
+  color: #c00;
+}
+
+ul {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 1em;
+}
+
+ul.posts li:before, ul.accomplishments li.first:before {
+  content: "\00BB \0020";
+}
+
+ul.accomplishments {
+  padding-left: 0;
+}
+
+ul.accomplishments li li {
+  margin-left: 2em;
+}
+
+ul.accomplishments li li.first {
+  margin-left: 0;
+}
+
+#post p, .posts li, .books li, .talks li {
+  line-height: 1.4em;
+}
+
+.notice {
+  background-color: #ffeeaa;
+  border: 1px solid #ddcc99;
+  padding: 5px;
+}
+
+.header, .content, .footer {
+  width: 700px;
+  margin: auto;
+}
+
+.header {
+  border-bottom: 1px solid #000;
+}
+
+.header h2 a {
+  text-decoration: none;
+}
+
+.footer {
+  border-top: 5px solid #c00;
+  background: #ddd;
+  font-size: small;
+  padding: 10px;
+  width: 680px;
+}
+
+.footer ul, .footer a {
+  float: left;
+  padding: 0;
+  margin: 0 10px 0 0;
+}
+
+.footer p {
+  float: right;
+  margin-right: 10px;
+}
+
+a {
+  color: #333;
+}
+
+a:hover {
+  color: #666;
+}
+
+.clearing {
+  clear: both;
+}
+
+.meta {
+  margin: 5px 0 0 0;
+  padding: 0;
+  font-size: small;
+  border-bottom: 1px solid #ccc;
+}
+
+#post {
+  font-size: large;
+}
+
+#post a {
+  text-decoration: none;
+  color: #00f;
+}
+
+#post a:hover {
+  text-decoration: underline;
+}
+
+#post img {
+  float: right;
+  margin-bottom: 1em;
+}
+
+.highlight {
+  margin-bottom: 1em;
+  padding: 5px;
+  background: #ddd;
+  border: 1px solid #aaa;
+}

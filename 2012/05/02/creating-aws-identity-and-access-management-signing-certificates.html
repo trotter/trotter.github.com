@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Creating AWS Identity and Access Management (IAM) Signing Certificates</title>
+  <link href="http://feeds.feedburner.com/trottercashion" rel="alternate" title="Trotter Cashion" type="application/atom+xml" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
+  <meta name="bitly-verification" content="04b77a0a381e"/>
+</head>
+<body>
+  <div class="header">
+    <h2><a href="/">Trotter Cashion</a></h2>
+  </div>
+  <div class="content">
+    <div id="post">
+  <h1 id='creating_aws_identity_and_access_management_iam_signing_certificates'>Creating AWS Identity and Access Management (IAM) Signing Certificates</h1>
+
+<p>If you&#8217;re using Amazon Web Services (AWS), you already know that it&#8217;s a good way to increase server capacity on demand. However, you may not know that you can use AWS Identity and Access Management (IAM) to add extra users to your AWS account. With IAM, you assign users to groups, to which you can assign permissions such as the ability to upload to s3 or create ec2 instances.</p>
+
+<p><img alt='IAM Console' src='/images/2012-05-02-creating-aws-identity-and-access-management-signing-certificates/aws-iam.png' /></p>
+
+<p>Unfortunately, creating a signing certificate (necessary for using the command line tols) for each user is not as easy as it should be. Unlike the main set of account security credentials, you&#8217;re forced to create your own certificate. In the next few paragraphs, I&#8217;ll tell you all you need to know to generate these certs and associate them with your account.</p>
+
+<h1 id='create_an_account_in_iam'>Create an account in IAM</h1>
+
+<p>First, you&#8217;re going to want to create an account in IAM and attach it to a group. To get to IAM, login to your AWS console, and click the IAM tab at the top. Next, create a group if you don&#8217;t already have one.</p>
+
+<p><img alt='Make a group' src='/images/2012-05-02-creating-aws-identity-and-access-management-signing-certificates/make-groups.png' /></p>
+
+<p>Now we can make a user by first clicking the &#8220;Users&#8221; tab on the left and then clicking the &#8220;Create New Users&#8221; button up top. Enter a username for your user, and click &#8220;Create&#8221;. In the next dialog, be sure to download the security credentials (access key and secret key), so that you can give them to the user.</p>
+
+<p>Now click on the new user and choose &#8220;Add User to Groups&#8221; from the &#8220;Groups&#8221; tab in the info window. Choose the group we made earlier, so that this user has permission to do some things.</p>
+
+<h1 id='create_public_and_private_keys'>Create public and private keys</h1>
+
+<p>Now we need to create a public cert to upload to aws and a private key that will be stored on our computer. First, we&#8217;ll use openssl (you&#8217;ll need to have this installed), to create the private key. Next, we&#8217;ll create a public key using this private key. Finally, we will convert our private key to the pkcs8 format, which is what Amazon expects. I don&#8217;t know why this is necessary or what&#8217;s happening, I just know that it works. Without this change, Amazon&#8217;s command line elb tools will fail.</p>
+
+<pre><code>mkdir ~/.ec2
+cd ~/.ec2
+openssl genrsa -out pk-amazon.pem 2048
+
+# When you are prompted for information in this next step, just
+# leave all fields blank.
+openssl req -new -x509 -key pk-amazon.pem -out cert-amazon.pem -days 3650
+openssl pkcs8 -topk8 -in pk-amazon.pem -nocrypt &gt; pk-temp.pem
+mv pk-temp.pem pk-amazon.pem</code></pre>
+
+<p>If you didn&#8217;t properly convert your private key, then you&#8217;ll see an error like the following when you try to interact with your load balancers.</p>
+
+<pre><code>elb-describe-lbs:  Malformed input-The content of the file:
+/Users/trotter/.ec2/pk-amazon.pem, is not a valid private key</code></pre>
+
+<p>If you hit this error, make sure that you ran the last two lines above:</p>
+
+<pre><code>openssl pkcs8 -topk8 -in pk-amazon.pem -nocrypt &gt; pk-temp.pem
+mv pk-temp.pem pk-amazon.pem</code></pre>
+
+<h1 id='upload_certificate'>Upload certificate</h1>
+
+<p>Our final step is to upload our certificate to amazon. First, open the file and copy the contents. If you&#8217;re on a mac, you can do this by running <code>cat cert-amazon.pem | pbcopy</code> from the command line. Next, go back to your AWS console, click on your user, and choose the &#8220;Security Credentials&#8221; tab in the info window. Click the &#8220;Manage Signing Certificates&#8221; button, followed by &#8220;Upload Signing Certificates&#8221; in the dialog that appears. Now paste the certificate you copied earlier, and click &#8220;OK&#8221;. You&#8217;re now ready to use your private key with amazon ec2 tools.</p>
+
+<p><img alt='Upload certificate' src='/images/2012-05-02-creating-aws-identity-and-access-management-signing-certificates/getting-to-upload.png' /></p>
+
+<h1 id='testing'>Testing</h1>
+
+<p>To test that everything works properly, set your EC2_PRIVATE_KEY and EC2_CERT environment variables to point at your new keys.</p>
+
+<pre><code>export EC2_PRIVATE_KEY=&quot;~/.ec2/pk-amazon.pem&quot;
+export EC2_CERT=&quot;~/.ec2/cert-amazon.pem&quot;</code></pre>
+
+<p>Then run <code>ec2-describe-instances; elb-describe-lbs</code>. You <em>should</em> see a list of your instances and loadbalancers. At the very least, you should not see any errors.</p>
+
+  <div id="related">
+    <h3>Related Posts</h3>
+    <ul class="posts">
+      
+      <li><span>11 Apr 2011</span> &raquo; <a href="/2011/04/11/use-git-plumbing-for-more-awesome-github-pages.html">Use Git Plumbing For More Awesome Github Pages</a></li>
+      
+      <li><span>12 Aug 2012</span> &raquo; <a href="/2012/08/12/how-to-write-good-log-messages.html">How To Write Good Log Messages</a></li>
+      
+      <li><span>08 Feb 2011</span> &raquo; <a href="/2011/02/08/rubys-define_method-method_missing-and-instance_eval.html">Ruby's define_method, method_missing, and instance_eval</a></li>
+      
+    </ul>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /**
+      * var disqus_identifier; [Optional but recommended: Define a unique identifier (e.g. post id or slug) for this thread] 
+      */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = 'http://trottercashion.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=trottercashion">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Co-founder of <a href="http://mashion.net">Mashion</a></li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <p>
+      <a href="http://feeds.feedburner.com/trottercashion" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="vertical-align:middle;border:0"/></a>
+    </p>
+    <br class="clearing" />
+    
+  </div>
+
+  <!-- google analytics -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3670698-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <!-- get clicky -->
+  <script type="text/javascript">
+  var clicky = { log: function(){ return; }, goal: function(){ return; }};
+  var clicky_site_id = 210101;
+  (function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = ( document.location.protocol == 'https:' ? 'https://static.getclicky.com' : 'http://static.getclicky.com' ) + '/js';
+    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+  })();
+  </script>
+  <a title="Web Analytics" href="http://getclicky.com/210101"></a>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/210101ns.gif" /></p></noscript>
+</body>
+</html>

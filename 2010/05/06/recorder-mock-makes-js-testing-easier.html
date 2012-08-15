@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recorder Mock Makes JS Testing Easier</title>
+  <link href="http://feeds.feedburner.com/trottercashion" rel="alternate" title="Trotter Cashion" type="application/atom+xml" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
+  <meta name="bitly-verification" content="04b77a0a381e"/>
+</head>
+<body>
+  <div class="header">
+    <h2><a href="/">Trotter Cashion</a></h2>
+  </div>
+  <div class="content">
+    <div id="post">
+  <h1>Recorder Mock Makes JS Testing Easier</h1>
+<p class="meta">May 6, 2010 &#8211; Philly</p>
+<p>After reading last week&#8217;s post on <a href="/2010/04/27/headless-raphael-testing.html">headless raphael testing</a>, my buddy Mat said, &#8220;that mock is ugly and repetitive.&#8221; Thankfully, he then went out and wrote <a href="http://github.com/matschaffer/recorderMock.js">RecorderMock.js</a> and wrote a <a href="http://matschaffer.com/2010/04/mock-jquery-javascript-libraries/">blog post</a> about it. In light of his awesome, I&#8217;m going to show how to use RecorderMock.js to replace the ugly mock from my earlier post.</p>
+<p>First, we&#8217;re going to remove the old Raphael mock that we wrote in the last post. Here&#8217;s the old code:</p>
+<div class="highlight"><pre><code class="js"><span class="kd">var</span> <span class="nx">Raphael</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">attr</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">text</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// store text calls</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">animate</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// store animate calls</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span> <span class="o">||</span> <span class="p">[];</span>
+  <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span> <span class="o">||</span> <span class="p">[];</span>
+
+  <span class="k">return</span> <span class="nx">self</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Raphael</span><span class="p">.</span><span class="nx">clear</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">Raphael</span><span class="p">.</span><span class="nx">textCalls</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="nx">Raphael</span><span class="p">.</span><span class="nx">animateCalls</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="p">};</span>
+</code></pre>
+</div>
+<p>The new code is a much simpler one liner:</p>
+<div class="highlight"><pre><code class="js"><span class="nx">Raphael</span> <span class="o">=</span> <span class="nx">recorderMock</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;animate&quot;</span><span class="p">,</span> <span class="s2">&quot;attr&quot;</span><span class="p">);</span>
+</code></pre>
+</div>
+<p>As a bonus, that one line gives us a more functionality than before, in that we can now inspect attr calls as well.</p>
+<p>RecorderMock.js has a slightly different interface than our earlier mock, so we&#8217;ll need to change the test code as well. That file is pretty large, so I&#8217;m only going to show the difference.</p>
+<div class="highlight"><pre><code class="diff"><span class="gd">- var text = Raphael.textCalls;</span>
+<span class="gi">+ var text = Raphael.text.__calls;</span>
+
+<span class="gd">- var animate = Raphael.animateCalls;</span>
+<span class="gi">+ var animate = Raphael.animate.__calls;</span>
+</code></pre>
+</div>
+<p>In addition, all usages of <code>text[n]</code> need to be replaces with <code>text[n].arguments</code>, because RecorderMock.js stores more than just the arguments of the call. You can do cool things likes <code>Raphael.attr.__calls[0].previous</code> to retrieve the node on which <code>attr</code> was called. That&#8217;s a pretty handy feature for determining if you&#8217;re setting the correct text node&#8217;s color to black.</p>
+
+  <div id="related">
+    <h3>Related Posts</h3>
+    <ul class="posts">
+      
+      <li><span>27 Apr 2010</span> &raquo; <a href="/2010/04/27/headless-raphael-testing.html">Headless Raphael Testing</a></li>
+      
+      <li><span>08 Feb 2011</span> &raquo; <a href="/2011/02/08/rubys-define_method-method_missing-and-instance_eval.html">Ruby's define_method, method_missing, and instance_eval</a></li>
+      
+      <li><span>11 Apr 2011</span> &raquo; <a href="/2011/04/11/use-git-plumbing-for-more-awesome-github-pages.html">Use Git Plumbing For More Awesome Github Pages</a></li>
+      
+    </ul>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /**
+      * var disqus_identifier; [Optional but recommended: Define a unique identifier (e.g. post id or slug) for this thread] 
+      */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = 'http://trottercashion.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=trottercashion">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Co-founder of <a href="http://mashion.net">Mashion</a></li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <p>
+      <a href="http://feeds.feedburner.com/trottercashion" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="vertical-align:middle;border:0"/></a>
+    </p>
+    <br class="clearing" />
+    
+  </div>
+
+  <!-- google analytics -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3670698-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <!-- get clicky -->
+  <script type="text/javascript">
+  var clicky = { log: function(){ return; }, goal: function(){ return; }};
+  var clicky_site_id = 210101;
+  (function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = ( document.location.protocol == 'https:' ? 'https://static.getclicky.com' : 'http://static.getclicky.com' ) + '/js';
+    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+  })();
+  </script>
+  <a title="Web Analytics" href="http://getclicky.com/210101"></a>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/210101ns.gif" /></p></noscript>
+</body>
+</html>

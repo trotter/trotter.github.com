@@ -1,0 +1,1153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>Trotter Cashion</title>
+ <link href="http://feeds.feedburner.com/trottercashion" rel="self"/>
+ <link href="http://www.trottercashion.com/"/>
+ <updated>2012-08-15T15:40:54-07:00</updated>
+ <id>http://www.trottercashion.com/</id>
+ <author>
+   <name>Trotter Cashion</name>
+   <email>cashion@gmail.com</email>
+ </author>
+
+ 
+ <entry>
+   <title>How To Write Good Log Messages</title>
+   <link href="http://www.trottercashion.com/2012/08/12/how-to-write-good-log-messages.html"/>
+   <updated>2012-08-12T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2012/08/12/how-to-write-good-log-messages</id>
+   <content type="html">&lt;h1 id='how_to_write_good_log_messages'&gt;How To Write Good Log Messages&lt;/h1&gt;
+
+&lt;p&gt;Logging is important. Very important. When your application breaks, the first place you usually check for a hint of what went wrong is the logs. Unfortunately, I have found that most log messages are absolutely terrible. They include snarky comments, lack any indication of what was going on, and sometimes do not even include the current time. Based on my experience, a good log message looks like this (wrapped for clarity):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;INFO 2012-09-20T20:27:59Z blog1.trottercashion.com 4537 10.21.7.50 \
+  app/models/post.rb:75 5cc6e4238e6b76207825e14924a96d59f5c82c19 \
+  post_id=543;blog_id=4 Loading Post&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id='component_breakdown'&gt;Component Breakdown&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;#8217;s break this line down into its components. I&amp;#8217;ll start with the component name followed by the corresponding portion of the line from above. Finally, I&amp;#8217;ll give a brief description of this component&amp;#8217;s purpose.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;level&lt;/strong&gt; - INFO - This is the log level for your logger. It gives you an idea of the importance of a message at a quick glance.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;time&lt;/strong&gt; - 2012-09-20T20:27:59Z - The current time in &lt;a href='http://en.wikipedia.org/wiki/ISO_8601'&gt;ISO-8601 format&lt;/a&gt;. Your date will be yyyy-mm-dd, and the Z at the end of the time signifies that this is UTC time.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;host&lt;/strong&gt; - blog1.trottercashion.com - The hostname for the server. When you start agregating logs from many hosts together, this lets you know which box actually logged this message.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;pid&lt;/strong&gt; - 4537 - The pid for the process. This can help you to figure out if only one particular process is misbehaving.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;user&lt;/strong&gt; - 10.21.7.50 - Some unique identifier for either the user or the transaction. Here I&amp;#8217;m using IP, but a session id often works better. You&amp;#8217;re really looking for a way to track a user&amp;#8217;s actions across multiple requests and services.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;location&lt;/strong&gt; - app/models/post.rb:75 - The location in the code that generated this message. This will save you a &lt;em&gt;lot&lt;/em&gt; of time figuring out where you need to look in your code.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;version&lt;/strong&gt; - 5cc6e4238e6b76207825e14924a96d59f5c82c19 - The version of the code you are running. Here I am using a git commit hash, but you could just as well use semver. This is &lt;em&gt;very&lt;/em&gt; important as the location in the log may be for a different version of code than what is currently running.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;variables&lt;/strong&gt; - post_id=543;blog_id=4 - Any important variables you want to output. Here I am writing out the post id and blog id, so that I can inspect them in my database if there&amp;#8217;s a problem.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;message&lt;/strong&gt; - Loading Post - An plain text description of what&amp;#8217;s going on. Make sure it is descriptive and not a snarky comment like &amp;#8220;in ur codez&amp;#8221;.&lt;/p&gt;
+
+&lt;h2 id='nuances'&gt;Nuances&lt;/h2&gt;
+
+&lt;p&gt;I find it&amp;#8217;s best to separate each component of the output with a tab. This makes splitting it using tools like &lt;code&gt;cut&lt;/code&gt; very easy. Alternately, using spaces is fine as well, but you&amp;#8217;ll find that your message usually contains spaces. I&amp;#8217;ve used spaces in the example above mainly to ensure it looks nice in the browser. Alternately, Some people like to output their logs as json, which leads to lines that look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;level&amp;quot;:&amp;quot;INFO&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;08-08-2012-20:27:59&amp;quot;, \
+ &amp;quot;host&amp;quot;:&amp;quot;blog1.trottercashion.com&amp;quot;,&amp;quot;pid&amp;quot;:4537,&amp;quot;user&amp;quot;:&amp;quot;10.21.7.50&amp;quot;,
+ &amp;quot;location&amp;quot;:&amp;quot;app/models/post.rb:75&amp;quot;, \
+ &amp;quot;version&amp;quot;:&amp;quot;5cc6e4238e6b76207825e14924a96d59f5c82c19&amp;quot;, \
+ &amp;quot;variables&amp;quot;:{&amp;quot;post_id&amp;quot;:543,&amp;quot;blog_id&amp;quot;:4},&amp;quot;message&amp;quot;:&amp;quot;Loading Post&amp;quot;}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This seems like a perfectly accessible approach to me, but it&amp;#8217;s not one that I&amp;#8217;ve experimented with yet.&lt;/p&gt;
+
+&lt;p&gt;Also, it is worth pointing out that determining the file and line number for the location component &lt;em&gt;may&lt;/em&gt; slow down your program. If this is the case in your language of choice, you may want to use something like &lt;code&gt;class_name:method_name&lt;/code&gt; instead. As long as it helps you get back to a place in code, use whatever you want for location.&lt;/p&gt;
+
+&lt;p&gt;So what are your thoughts on log messages? If I&amp;#8217;ve left out anything that you find particularly important, please let me know in the comments. I&amp;#8217;m always looking for ways to improve my logging.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt; - I updated the time to use ISO-8601. As pointed out in the comments, it&amp;#8217;s a much clearer way to specify the time and it sorts lexically.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Creating AWS Identity and Access Management (IAM) Signing Certificates</title>
+   <link href="http://www.trottercashion.com/2012/05/02/creating-aws-identity-and-access-management-signing-certificates.html"/>
+   <updated>2012-05-02T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2012/05/02/creating-aws-identity-and-access-management-signing-certificates</id>
+   <content type="html">&lt;h1 id='creating_aws_identity_and_access_management_iam_signing_certificates'&gt;Creating AWS Identity and Access Management (IAM) Signing Certificates&lt;/h1&gt;
+
+&lt;p&gt;If you&amp;#8217;re using Amazon Web Services (AWS), you already know that it&amp;#8217;s a good way to increase server capacity on demand. However, you may not know that you can use AWS Identity and Access Management (IAM) to add extra users to your AWS account. With IAM, you assign users to groups, to which you can assign permissions such as the ability to upload to s3 or create ec2 instances.&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt='IAM Console' src='/images/2012-05-02-creating-aws-identity-and-access-management-signing-certificates/aws-iam.png' /&gt;&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, creating a signing certificate (necessary for using the command line tols) for each user is not as easy as it should be. Unlike the main set of account security credentials, you&amp;#8217;re forced to create your own certificate. In the next few paragraphs, I&amp;#8217;ll tell you all you need to know to generate these certs and associate them with your account.&lt;/p&gt;
+
+&lt;h1 id='create_an_account_in_iam'&gt;Create an account in IAM&lt;/h1&gt;
+
+&lt;p&gt;First, you&amp;#8217;re going to want to create an account in IAM and attach it to a group. To get to IAM, login to your AWS console, and click the IAM tab at the top. Next, create a group if you don&amp;#8217;t already have one.&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt='Make a group' src='/images/2012-05-02-creating-aws-identity-and-access-management-signing-certificates/make-groups.png' /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now we can make a user by first clicking the &amp;#8220;Users&amp;#8221; tab on the left and then clicking the &amp;#8220;Create New Users&amp;#8221; button up top. Enter a username for your user, and click &amp;#8220;Create&amp;#8221;. In the next dialog, be sure to download the security credentials (access key and secret key), so that you can give them to the user.&lt;/p&gt;
+
+&lt;p&gt;Now click on the new user and choose &amp;#8220;Add User to Groups&amp;#8221; from the &amp;#8220;Groups&amp;#8221; tab in the info window. Choose the group we made earlier, so that this user has permission to do some things.&lt;/p&gt;
+
+&lt;h1 id='create_public_and_private_keys'&gt;Create public and private keys&lt;/h1&gt;
+
+&lt;p&gt;Now we need to create a public cert to upload to aws and a private key that will be stored on our computer. First, we&amp;#8217;ll use openssl (you&amp;#8217;ll need to have this installed), to create the private key. Next, we&amp;#8217;ll create a public key using this private key. Finally, we will convert our private key to the pkcs8 format, which is what Amazon expects. I don&amp;#8217;t know why this is necessary or what&amp;#8217;s happening, I just know that it works. Without this change, Amazon&amp;#8217;s command line elb tools will fail.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir ~/.ec2
+cd ~/.ec2
+openssl genrsa -out pk-amazon.pem 2048
+
+# When you are prompted for information in this next step, just
+# leave all fields blank.
+openssl req -new -x509 -key pk-amazon.pem -out cert-amazon.pem -days 3650
+openssl pkcs8 -topk8 -in pk-amazon.pem -nocrypt &amp;gt; pk-temp.pem
+mv pk-temp.pem pk-amazon.pem&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you didn&amp;#8217;t properly convert your private key, then you&amp;#8217;ll see an error like the following when you try to interact with your load balancers.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;elb-describe-lbs:  Malformed input-The content of the file:
+/Users/trotter/.ec2/pk-amazon.pem, is not a valid private key&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you hit this error, make sure that you ran the last two lines above:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;openssl pkcs8 -topk8 -in pk-amazon.pem -nocrypt &amp;gt; pk-temp.pem
+mv pk-temp.pem pk-amazon.pem&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id='upload_certificate'&gt;Upload certificate&lt;/h1&gt;
+
+&lt;p&gt;Our final step is to upload our certificate to amazon. First, open the file and copy the contents. If you&amp;#8217;re on a mac, you can do this by running &lt;code&gt;cat cert-amazon.pem | pbcopy&lt;/code&gt; from the command line. Next, go back to your AWS console, click on your user, and choose the &amp;#8220;Security Credentials&amp;#8221; tab in the info window. Click the &amp;#8220;Manage Signing Certificates&amp;#8221; button, followed by &amp;#8220;Upload Signing Certificates&amp;#8221; in the dialog that appears. Now paste the certificate you copied earlier, and click &amp;#8220;OK&amp;#8221;. You&amp;#8217;re now ready to use your private key with amazon ec2 tools.&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt='Upload certificate' src='/images/2012-05-02-creating-aws-identity-and-access-management-signing-certificates/getting-to-upload.png' /&gt;&lt;/p&gt;
+
+&lt;h1 id='testing'&gt;Testing&lt;/h1&gt;
+
+&lt;p&gt;To test that everything works properly, set your EC2_PRIVATE_KEY and EC2_CERT environment variables to point at your new keys.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;export EC2_PRIVATE_KEY=&amp;quot;~/.ec2/pk-amazon.pem&amp;quot;
+export EC2_CERT=&amp;quot;~/.ec2/cert-amazon.pem&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then run &lt;code&gt;ec2-describe-instances; elb-describe-lbs&lt;/code&gt;. You &lt;em&gt;should&lt;/em&gt; see a list of your instances and loadbalancers. At the very least, you should not see any errors.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Introducing Chloe - The Realtime Web Server</title>
+   <link href="http://www.trottercashion.com/2011/06/13/introducing-chloe.html"/>
+   <updated>2011-06-13T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2011/06/13/introducing-chloe</id>
+   <content type="html">&lt;h1 id='introducing_chloe__the_realtime_web_server'&gt;Introducing Chloe - The Realtime Web Server&lt;/h1&gt;
+
+&lt;p&gt;Developing for the realtime web is hard. It&amp;#8217;s not that the concepts are terribly hard, or the coding in particular, rather it&amp;#8217;s the operational difficulties of handling tens of thousands of concurrent requests without having your web server fall over. In an attempt to solve this problem, I&amp;#8217;ve created an open source, realtime web server called &lt;a href='https://github.com/mashion/chloe'&gt;Chloe&lt;/a&gt;, which vastly simplifies the problem of connecting your existing web app to the realtime web. It works over WebSockets, but falls back to xhr or long polling when the browser can&amp;#8217;t handle WebSockets. It supports a hybrid of the Socket.IO and Faye APIs, and requires nothing special from your application other than the ability to send and receive HTTP POSTs.&lt;/p&gt;
+
+&lt;h2 id='how_it_works'&gt;How It Works&lt;/h2&gt;
+
+&lt;p&gt;The beauty of Chloe is that it works wonderfully with absolutely any web framework. Use Rails? We got you covered. Spring? No problem. Node.js? Yea, we can even do that too. The trick is that Chloe handles all the web sockety (and xhr / long polling fallback) bits, and sends an HTTP POST to your web application when new data comes in via the browser. When you want to send data back to the browser, you just send a POST to Chloe. Because Chloe is written in Erlang and uses the Yaws web server, it&amp;#8217;s built from the ground up to handle tens of thousands of simultaneous connections without falling over.&lt;/p&gt;
+
+&lt;p&gt;In practical terms, it works like this (ripped straight from the Chloe README). The user&amp;#8217;s browser loads your page &lt;span&gt;1&lt;/span&gt;, which instantiates a connection to Chloe using JavaScript. It can then send data over that connection &lt;span&gt;2&lt;/span&gt;, which will be relayed to your app via a POST from Chloe &lt;span&gt;3&lt;/span&gt;. When you have data that you want to send back to the browser, send a POST to Chloe &lt;span&gt;4&lt;/span&gt;, which will relay it back to the connected browser &lt;span&gt;5&lt;/span&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                           2. Send data over websockets
+  +---------------------------------------------------------------------------------------------+
+  |                                                                                             v
++------------------------+  1. /index.html   +----------+  4. POST /send (data for browser)   +-------+
+|        Browser         | ----------------&amp;gt; | Your App | ----------------------------------&amp;gt; | Chloe | -+
++------------------------+                   +----------+                                     +-------+  |
+  ^                                            ^          3. Data from the browser              |        |
+  | 5. Data from your app                      +------------------------------------------------+        |
+  |                                                                                                      |
+  |                                                                                                      |
+  +------------------------------------------------------------------------------------------------------+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Chloe is dead simple to integrate into any existing web application. We recently converted &lt;a href='http://simulchart-rails.heroku.com'&gt;Simulchart&lt;/a&gt;, previously written in Node.js, to Rails and Chloe, and it only took a few hours. If you have a look at &lt;a href='https://github.com/mashion/simulchart-rails'&gt;the source&lt;/a&gt;, you&amp;#8217;ll see that the Rails code only has to worry about realtime aspects in &lt;a href='https://github.com/mashion/simulchart-rails/blob/master/app/controllers/charts_controller.rb#L30'&gt;one place&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id='getting_and_running_it'&gt;Getting and Running It&lt;/h2&gt;
+
+&lt;p&gt;If you want to see how Chloe works for yourself, I&amp;#8217;d love for you to pull it down and run it. On OSX, this is as easy the following. If you&amp;#8217;re on Ubuntu, we&amp;#8217;ve got packages for you as well. Find the package for you at &lt;a href='https://github.com/mashion/chloe/downloads'&gt;https://github.com/mashion/chloe/downloads&lt;/a&gt; and substitute it for the one below.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;curl -LO &lt;span class='se'&gt;\&lt;/span&gt;
+  https://github.com/downloads/mashion/chloe/chloe-0.0.3-osx.tgz
+tar xzvf chloe-0.0.3-osx.tgz
+./chloe-0.0.3/bin/chloe start
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;To check that Chloe is &lt;em&gt;really&lt;/em&gt; running, hit &lt;a href='http://localhost:8901'&gt;http://localhost:8901&lt;/a&gt;. You should see a simple page telling that it&amp;#8217;s up. To stop the server, just use &lt;code&gt;./chloe-0.0.3/bin/chloe stop&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Of course, just running a Chloe server on its own isn&amp;#8217;t &lt;em&gt;that&lt;/em&gt; interesting. So pull down the Chloe source and run the demo app that will let you see how Chloe works.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;git clone https://github.com/mashion/chloe.git
+ruby support/echo_server.rb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Then point your browser at &lt;a href='http://localhost:4567'&gt;http://localhost:4567&lt;/a&gt; and see Chloe in action.&lt;/p&gt;
+
+&lt;p&gt;To see Chloe at work in a more substantial app, pull down the Simulchart source from &lt;a href='https://github.com/mashion/simulchart.git'&gt;https://github.com/mashion/simulchart.git&lt;/a&gt;, get a twitter api key, and run Simulchart locally.&lt;/p&gt;
+
+&lt;h2 id='whats_left'&gt;What&amp;#8217;s Left&lt;/h2&gt;
+
+&lt;p&gt;Chloe is still in active development, and we&amp;#8217;ve got a number of upcoming features planned. First, we need to authenticate outbound POSTs through Chloe, so that only your application can send data down to the browser. Second, we want to add a number of monitoring hooks to make gauging the health of a running Chloe server super simple. Third, we&amp;#8217;d like to make the installation process even easier. We currently have self-contained binary packages for OSX and Ubuntu, but we&amp;#8217;d love to have legit debian and rpm packages. We also plan to write a homebrew recipe soon to make OSX installs even easier. Fourth, we want to see how the community uses Chloe and improve our API to make the common use cases easier to do. If you want to help with any of these efforts, we&amp;#8217;d love your support. Code is available on github at &lt;a href='https://github.com/mashion/chloe'&gt;https://github.com/mashion/chloe&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id='learn_more_contribute_give_back'&gt;Learn More, Contribute, Give Back&lt;/h2&gt;
+
+&lt;p&gt;If you think Chloe sounds cool, I&amp;#8217;d really appreciate &lt;a href='http://monetateopensource.strutta.com/entry/168161'&gt;your vote&lt;/a&gt; in the &lt;a href='http://monetateopensource.strutta.com/entry/168161'&gt;Monetate Open Source Prize&lt;/a&gt;. The top prize is $5,000, which we&amp;#8217;ll put directly towards funding additional Chloe development.&lt;/p&gt;
+
+&lt;p&gt;If you &lt;em&gt;really&lt;/em&gt; think it sounds cool, I&amp;#8217;d love your help developing it. Code is available on github at &lt;a href='https://github.com/mashion/chloe'&gt;https://github.com/mashion/chloe&lt;/a&gt;. Patches and forks are always welcome.&lt;/p&gt;
+
+&lt;p&gt;FYI, if you liked this post, consider subscribing to &lt;a href='http://feeds.feedburner.com/trottercashion'&gt;my feed&lt;/a&gt; for more awesome bits of knowledge.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Automating the CloudFoundry Install</title>
+   <link href="http://www.trottercashion.com/2011/04/14/automating-the-cloudfoundry-install.html"/>
+   <updated>2011-04-14T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2011/04/14/automating-the-cloudfoundry-install</id>
+   <content type="html">&lt;h1 id='automating_the_cloudfoundry_install'&gt;Automating the CloudFoundry Install&lt;/h1&gt;
+&lt;p class='meta'&gt;April 14, 2011 - Philly&lt;/p&gt;
+&lt;p&gt;If you haven&amp;#8217;t heard, VMWare open sourced a massive platform as a service application called &lt;a href='http://cloudfoundry.org/'&gt;CloudFoundry&lt;/a&gt; two days ago. It&amp;#8217;s totally awesome, but as the &lt;a href='https://github.com/cloudfoundry/vcap/blob/master/README'&gt;README&lt;/a&gt; illustrates, it takes a while to get it installed and setup. Since I don&amp;#8217;t like waiting, I transformed that README into a simple bash script that will handle everything for you. It&amp;#8217;s available now on &lt;a href='https://github.com/trotter/vcap/tree/fix-install-process-part-deux'&gt;my fork&lt;/a&gt;. It takes nearly an hour to run, but only requires manual intervention when entering the sudo password (which only happens twice). With this script, getting up and running with CloudFoundry is as simple as downloading &lt;a href='http://www.ubuntu.com/business/get-ubuntu/download'&gt;Ubuntu 10.04.2&lt;/a&gt; and &lt;a href='http://www.virtualbox.org/'&gt;Virtualbox&lt;/a&gt; and running the following commands in your Ubuntu VM:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;    sudo apt-get install -y openssh-server curl
+    bash &amp;lt; &amp;lt;&lt;span class='o'&gt;(&lt;/span&gt;curl -s -k -B https://github.com/trotter/vcap/raw/fix-install-process/setup/install&lt;span class='o'&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;In the future, I&amp;#8217;d like to turn this script into a set of Chef recipes&amp;#8230; but that&amp;#8217;s for the future. In the meantime, have fun playing with CloudFoundry!&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Use Git Plumbing For More Awesome Github Pages</title>
+   <link href="http://www.trottercashion.com/2011/04/11/use-git-plumbing-for-more-awesome-github-pages.html"/>
+   <updated>2011-04-11T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2011/04/11/use-git-plumbing-for-more-awesome-github-pages</id>
+   <content type="html">&lt;h1 id='use_git_plumbing_for_more_awesome_github_pages'&gt;Use Git Plumbing For More Awesome Github Pages&lt;/h1&gt;
+&lt;p class='meta'&gt;April 11, 2011 - Philly&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://pages.github.com/'&gt;GitHub Pages&lt;/a&gt; are an excellent way to publish your blog or documentation, but I&amp;#8217;ve been having a small problem with mine lately. My bounce rates on this blog are higher than I&amp;#8217;d like, so I started using Jekyll&amp;#8217;s &lt;code&gt;related_posts&lt;/code&gt; feature to let people know there&amp;#8217;s more they might want to read. Unfortunately, GitHub disables &lt;code&gt;lsi&lt;/code&gt;, which gives good cross-post recommendations, when building your Jekyll blog, because it requires more processing power than they&amp;#8217;d like to spend.&lt;/p&gt;
+
+&lt;p&gt;Thankfully, Scott Chacon gave a &lt;a href='http://threetrees.heroku.com/#1'&gt;fantastic talk&lt;/a&gt; at RubyNation a week ago that covered some neat git plumbing tricks to solve my problem, which I codified into the following &lt;code&gt;Rakefile&lt;/code&gt;.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='nb'&gt;require&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;fileutils&amp;#39;&lt;/span&gt;
+
+    &lt;span class='n'&gt;task&lt;/span&gt; &lt;span class='ss'&gt;:publish&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt;
+      &lt;span class='no'&gt;FileUtils&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;rm_rf&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;/tmp/trotter-blog-index&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+      &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;GIT_INDEX_FILE&amp;#39;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;/tmp/trotter-blog-index&amp;#39;&lt;/span&gt;
+      &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;jekyll --lsi generated&amp;quot;&lt;/span&gt;
+      &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;cd generated &amp;amp;&amp;amp; GIT_DIR=../.git git add .&amp;quot;&lt;/span&gt;
+      &lt;span class='n'&gt;tsha&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='sb'&gt;`git write-tree`&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;chomp&lt;/span&gt;
+      &lt;span class='n'&gt;csha&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='sb'&gt;`echo &amp;#39;updated&amp;#39; | git commit-tree &lt;/span&gt;&lt;span class='si'&gt;#{&lt;/span&gt;&lt;span class='n'&gt;tsha&lt;/span&gt;&lt;span class='si'&gt;}&lt;/span&gt;&lt;span class='sb'&gt;`&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;chomp&lt;/span&gt;
+      &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;git update-ref refs/heads/master &lt;/span&gt;&lt;span class='si'&gt;#{&lt;/span&gt;&lt;span class='n'&gt;csha&lt;/span&gt;&lt;span class='si'&gt;}&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;&lt;/span&gt;
+      &lt;span class='no'&gt;FileUtils&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;rm_rf&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;generated&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+      &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;git push -f origin master&amp;quot;&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;TL;DR:&lt;/strong&gt; Copy the above into your &lt;code&gt;Rakefile&lt;/code&gt;, run &lt;code&gt;git co -b jekyll&lt;/code&gt;, run &lt;code&gt;rake
+publish&lt;/code&gt;. However, you probably want to read on, because this task some crazy shit.&lt;/p&gt;
+
+&lt;h2 id='the_high_level'&gt;The High Level&lt;/h2&gt;
+
+&lt;p&gt;The &lt;code&gt;publish&lt;/code&gt; task starts off by telling jekyll to generate the site with lsi enabled, which will give us good cross post recommendations. It then builds and commits an unreferenced tree with all the files in &lt;code&gt;generated&lt;/code&gt; at the root of the tree. It then points the &lt;code&gt;master&lt;/code&gt; branch at the resulting commit, and pushes it up to &lt;code&gt;origin&lt;/code&gt;, which is GitHub in my case.&lt;/p&gt;
+
+&lt;h2 id='the_low_level'&gt;The Low Level&lt;/h2&gt;
+
+&lt;p&gt;So how does all that really work at the low level? Well, we start by using an alternate an alternate index file, which will keep this commit separate from all previous history in our repo:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='no'&gt;FileUtils&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;rm_rf&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;/tmp/trotter-blog-index&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+    &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;GIT_INDEX_FILE&amp;#39;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;/tmp/trotter-blog-index&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Next, we tell jekyll to generate our project into the &lt;code&gt;generated&lt;/code&gt; directory with lsi enabled:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;jekyll --lsi generated&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Now it&amp;#8217;s time to add the files. If we do a normal &lt;code&gt;git add .&lt;/code&gt;, then we&amp;#8217;re going to end up with a tree like the following:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;    new file: generated/index.html
+    new file: generated/favicon.ico
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;In order for GitHub to properly serve our site though, we need the tree to look more like this:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;    new file: index.html
+    new file: favicon.ico
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;To fix this problem, go into the &lt;code&gt;generated&lt;/code&gt; directory, and tell git to use &lt;code&gt;../.git&lt;/code&gt; as its git directory. For some reason (hoping someone in the comments will know), this will cause git to treat the &lt;code&gt;generated&lt;/code&gt; directory as the root of the project. We&amp;#8217;re now free to add our files:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;cd generated &amp;amp;&amp;amp; GIT_DIR=../.git git add .&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Using &lt;code&gt;write-tree&lt;/code&gt;, we&amp;#8217;ll write our current index to a tree in git. The command will output a tree hash, which we will pass to &lt;code&gt;commit-tree&lt;/code&gt; to build an actual commit for our changes. This will output a commit hash, which we will store in &lt;code&gt;csha&lt;/code&gt; and use to update &lt;code&gt;master&lt;/code&gt; in a minute.&lt;/p&gt;
+
+&lt;p&gt;Now we&amp;#8217;ll build a tree from our current index using &lt;code&gt;write-tree&lt;/code&gt;, commit it using &lt;code&gt;commit-tree&lt;/code&gt;, and keep track of the commit hash in &lt;code&gt;csha&lt;/code&gt;.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='n'&gt;tsha&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='sb'&gt;`git write-tree`&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;chomp&lt;/span&gt;
+    &lt;span class='n'&gt;csha&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='sb'&gt;`echo &amp;#39;updated&amp;#39; | git commit-tree &lt;/span&gt;&lt;span class='si'&gt;#{&lt;/span&gt;&lt;span class='n'&gt;tsha&lt;/span&gt;&lt;span class='si'&gt;}&lt;/span&gt;&lt;span class='sb'&gt;`&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;chomp&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;We&amp;#8217;ll use &lt;code&gt;update-ref&lt;/code&gt; to point the &lt;code&gt;master&lt;/code&gt; reference, which is our &lt;code&gt;master&lt;/code&gt; branch, at the commit we just created. Because this changes your &lt;code&gt;master&lt;/code&gt; reference, be sure that you&amp;#8217;ve created a &lt;code&gt;jekyll&lt;/code&gt; branch as I mentioned in the tl;dr above. If you don&amp;#8217;t, then you&amp;#8217;ll likely lose your reference to your ungenerated project. If this happens, you can get it back using &lt;code&gt;git fsck
+--lost-found&lt;/code&gt;. Sadly, I don&amp;#8217;t know much about how that works.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;git update-ref refs/heads/master &lt;/span&gt;&lt;span class='si'&gt;#{&lt;/span&gt;&lt;span class='n'&gt;csha&lt;/span&gt;&lt;span class='si'&gt;}&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Finally, we clean up the &lt;code&gt;generated&lt;/code&gt; directory and push our new &lt;code&gt;master&lt;/code&gt; to github. Because everything is at the root level with an &lt;code&gt;index.html&lt;/code&gt;, GitHub will just serve up our project without first processing it through Jekyll.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='no'&gt;FileUtils&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;rm_rf&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;generated&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+    &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;git push -f origin master&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h2 id='running_the_command'&gt;Running the Command&lt;/h2&gt;
+
+&lt;p&gt;To make use of this Rake task in your own Jekyll projects, run the following on your commandline:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;    &lt;span class='nb'&gt;cd&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt;your project&lt;span class='o'&gt;]&lt;/span&gt;
+    curl -L http://bit.ly/my-rakefile &amp;gt;&amp;gt; Rakefile
+    git co -b jekyll
+    git add Rakefile
+    git commit -m &lt;span class='s2'&gt;&amp;quot;Add Trotter&amp;#39;s publish task&amp;quot;&lt;/span&gt;
+    git push github jekyll
+    rake publish
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;By default, the &lt;code&gt;publish&lt;/code&gt; task does not turn on lsi. You can add &lt;code&gt;lsi: true&lt;/code&gt; to &lt;code&gt;_config.yml&lt;/code&gt; to enable it, though you&amp;#8217;ll need the &lt;a href='http://www.gnu.org/software/gsl/'&gt;GNU Scientific Library&lt;/a&gt; to make it work.&lt;/p&gt;
+
+&lt;h2 id='beer_time'&gt;Beer Time&lt;/h2&gt;
+
+&lt;p&gt;Keep in mind that the &lt;code&gt;publish&lt;/code&gt; task &lt;strong&gt;will&lt;/strong&gt; make your &lt;code&gt;master&lt;/code&gt; branch point at an unparented commit, which contains your &lt;strong&gt;published&lt;/strong&gt; site. From now on, you&amp;#8217;ll make and commit all your changes to the &lt;code&gt;jekyll&lt;/code&gt; branch, then run &lt;code&gt;rake
+publish&lt;/code&gt; to actually publish your blog to GitHub. Go drink a beer and Enjoy!&lt;/p&gt;
+
+&lt;p&gt;FYI, if you liked this post, consider subscribing to &lt;a href='http://feeds.feedburner.com/trottercashion'&gt;my feed&lt;/a&gt; for more awesome bits of knowledge.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Creating Hovers With Raphael</title>
+   <link href="http://www.trottercashion.com/2011/04/07/creating-hovers-with-raphael.html"/>
+   <updated>2011-04-07T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2011/04/07/creating-hovers-with-raphael</id>
+   <content type="html">&lt;h1 id='creating_hovers_with_raphael'&gt;Creating Hovers With Raphael&lt;/h1&gt;
+&lt;p class='meta'&gt;April 07, 2011 - Philly&lt;/p&gt;
+&lt;p&gt;&lt;img alt='NYTimes Example' src='/images/2011-04-07-creating-hovers-with-raphael/nytimes.jpg' /&gt; In my &lt;a href='http://www.slideshare.net/trotter/raphal-rubynation'&gt;Raphael talk&lt;/a&gt; at &lt;a href='http://www.rubynation.org'&gt;RubyNation&lt;/a&gt; last weekend, I walked through a number of real world examples of Raphael in action. One of those examples was this &lt;a href='http://www.nytimes.com/interactive/2011/01/25/us/politics/state-of-the-union-words-used.html?ref=politics'&gt;cool graph&lt;/a&gt; of presidential patterns of speech in State of the Union Addresses. One interesting aspect of that graph is the way that hovering over a rectangle will give that rectangle a black border and position the callout next to it. In this post, I&amp;#8217;ll tell you how to create this style of hover for yourself.&lt;/p&gt;
+
+&lt;h2 id='it_starts_with_a_rectangle'&gt;It Starts With a Rectangle&lt;/h2&gt;
+
+&lt;p&gt;To get everything started, we first need to draw one of the rectangles from the graph. This code will take care of that:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;r = Raphael(&amp;quot;jobs-graph&amp;quot;, 640, 120);
+rect = r.rect(481, 30, 7, 90);
+rect.attr({stroke: &amp;quot;none&amp;quot;,
+           fill:   &amp;quot;#446093&amp;quot;});&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img alt='Sad Hover' src='/images/2011-04-07-creating-hovers-with-raphael/where-they-can-hover.jpg' /&gt; Since Raphael supports hover on elements natively, it&amp;#8217;s fairly tempting to just throw the hover directly onto this rectangle like so:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rect.hover(function () {
+    rect.attr({&amp;quot;stroke&amp;quot;: &amp;quot;#000&amp;quot;});
+  },
+  function () {
+    rect.attr({&amp;quot;stroke&amp;quot;: &amp;quot;none&amp;quot;});
+  }
+);&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, when the mouse is over the rectangle, we&amp;#8217;ll outline it in black. Problem solved, right?&lt;/p&gt;
+
+&lt;h2 id='make_big_hover_areas'&gt;Make Big Hover Areas&lt;/h2&gt;
+
+&lt;p&gt;Unfortunately, in order for your users to see your effect, they are required to hover &lt;em&gt;directly&lt;/em&gt; over the colored rectangle. As you&amp;#8217;ll quickly find, many users hover &lt;em&gt;around&lt;/em&gt; the rectangle, then wonder why the effects dissappear the minute their mouse moves slightly off the target area. To make hovering easier on your users, it&amp;#8217;s usually better to create a separate target area for hovering like so: &lt;img alt='Good Hover' src='/images/2011-04-07-creating-hovers-with-raphael/with-invisible.jpg' /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;hoverArea = r.rect(481, 0, 8, 120);
+hoverArea.attr({stroke: &amp;quot;none&amp;quot;,
+                fill:   &amp;quot;#f00&amp;quot;,
+                &amp;quot;fill-opacity&amp;quot;: 0});
+rect.hover(function () {
+    rect.attr({&amp;quot;stroke&amp;quot;: &amp;quot;#000&amp;quot;});
+  },
+  function () {
+    rect.attr({&amp;quot;stroke&amp;quot;: &amp;quot;none&amp;quot;});
+  }
+);&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;hoverArea&lt;/code&gt; rectangle sits directly over our previous rectangle, except it stretches from the top of the Raphael canvas to the bottom. This will allow users to hover in any area above the rectangle they can see, and still get the cool highlighting effect.&lt;/p&gt;
+
+&lt;h2 id='fill_your_hover_and_make_it_transparent'&gt;Fill Your Hover and Make It Transparent&lt;/h2&gt;
+
+&lt;p&gt;As you can see above, I&amp;#8217;ve made the &lt;code&gt;hoverArea&lt;/code&gt; rectangle have a transparent, red fill color. &lt;em&gt;This is absolutely necessary&lt;/em&gt;. If you don&amp;#8217;t give an element a &lt;code&gt;fill&lt;/code&gt;, then SVG will treat only the elements stroke area as hoverable. If you don&amp;#8217;t make the &lt;code&gt;fill-opacity&lt;/code&gt; transparent, then you&amp;#8217;ll have a giant red box on your screen. For my &lt;code&gt;fill&lt;/code&gt;, I prefer to use a unique color per hover element, because it&amp;#8217;s then simple to turn off the transparency and see where all my hover areas are located.&lt;/p&gt;
+
+&lt;h2 id='beer_time'&gt;Beer Time&lt;/h2&gt;
+
+&lt;p&gt;So that&amp;#8217;s it, you now know how to make sweet hovers using &lt;a href='http://raphaeljs.com'&gt;RaphaelJS&lt;/a&gt;. Go get yourself a beer and bask in your awesomeness. I&amp;#8217;ll have a post up in the near future on how to add the callout that you see in all these example images. Subscribe to &lt;a href='http://feeds.feedburner.com/trottercashion'&gt;my feed&lt;/a&gt; so that you&amp;#8217;ll remember to read it.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Ruby's define_method, method_missing, and instance_eval</title>
+   <link href="http://www.trottercashion.com/2011/02/08/rubys-define_method-method_missing-and-instance_eval.html"/>
+   <updated>2011-02-08T00:00:00-08:00</updated>
+   <id>http://www.trottercashion.com/2011/02/08/rubys-define_method-method_missing-and-instance_eval</id>
+   <content type="html">&lt;h1 id='rubys_define_method_method_missing_and_instance_eval'&gt;Ruby&amp;#8217;s define_method, method_missing, and instance_eval&lt;/h1&gt;
+&lt;p class='meta'&gt;February 08, 2011 - Philly&lt;/p&gt;
+&lt;p&gt;One of the things that I love most about Ruby is that it gets you part of the way to Lisp. Sure, it doesn&amp;#8217;t have full on macros, but it does have a number of totally cool methods that allow you to tighten up your code and ultimately make your programs more maintainable. Three that I really like are &lt;code&gt;define_method&lt;/code&gt;, &lt;code&gt;method_missing&lt;/code&gt;, and &lt;code&gt;instance_eval&lt;/code&gt;. So let&amp;#8217;s have a look.&lt;/p&gt;
+
+&lt;h2 id='define_method'&gt;define_method&lt;/h2&gt;
+
+&lt;p&gt;Ruby&amp;#8217;s &lt;code&gt;define_method&lt;/code&gt; lets you create methods using a method rather than the language builtin &lt;code&gt;def&lt;/code&gt;. One major benefit of this is that you can reduce the duplication inherent methods with similar definitions. For example, the following methods all pull data out of an internal hash:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='c1'&gt;# Without define_method:&lt;/span&gt;
+    &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;user&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt;  &lt;span class='vi'&gt;@data&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='ss'&gt;:user&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt;  &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;email&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt; &lt;span class='vi'&gt;@data&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='ss'&gt;:email&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt; &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;food&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt;  &lt;span class='vi'&gt;@data&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='ss'&gt;:food&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt;  &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;With &lt;code&gt;define_method&lt;/code&gt;, we can iterate over each method name and reduce the duplication like so:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='c1'&gt;# With define_method:&lt;/span&gt;
+    &lt;span class='sx'&gt;%w(user email food)&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;each&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
+      &lt;span class='n'&gt;define_method&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; &lt;span class='p'&gt;{&lt;/span&gt; &lt;span class='vi'&gt;@data&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;to_sym&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='p'&gt;}&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Though the above code is the same number of lines as the previous example, it&amp;#8217;s actually easier to maintain than when we defined each method individually. For example, Adding another method is as simple as adding an item to the array. In addition, if we rename our instance variable to &lt;code&gt;@kool_data&lt;/code&gt;, we only need to update our accessor methods in one place.&lt;/p&gt;
+
+&lt;p&gt;Another neat benefit is that methods created with define_method are actually closures, whereas normal Ruby methods are not. For instance, we could use &lt;code&gt;define_method&lt;/code&gt; to allow runtime creation of callback methods like so:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;Callbacker&lt;/span&gt;
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;make_callback&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;obj&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='n'&gt;metaclass&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='o'&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class='nb'&gt;self&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt; &lt;span class='nb'&gt;self&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt; &lt;span class='k'&gt;end&lt;/span&gt;
+        &lt;span class='n'&gt;metaclass&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;send&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='ss'&gt;:define_method&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;:callback&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt;
+          &lt;span class='n'&gt;obj&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;send&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='k'&gt;end&lt;/span&gt;
+      &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+
+    &lt;span class='c1'&gt;# usage&lt;/span&gt;
+    &lt;span class='n'&gt;callbacker&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;Callbacker&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;new&lt;/span&gt;
+    &lt;span class='n'&gt;callbacker&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;make_callback&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;   hello   &amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;:strip&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+    &lt;span class='n'&gt;callbacker&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;callback&lt;/span&gt;   &lt;span class='c1'&gt;# =&amp;gt; &amp;quot;hello&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Sadly, that example is quite contrived, but it&amp;#8217;s all I&amp;#8217;ve got off the top of my head. You&amp;#8217;ll also notice that I&amp;#8217;m calling &lt;code&gt;define_method&lt;/code&gt; on the metaclass for the object itself. I have to do this because &lt;code&gt;define_method&lt;/code&gt; is defined on &lt;code&gt;Class&lt;/code&gt;, not &lt;code&gt;object&lt;/code&gt;. By defining it on the metaclass instead of the object&amp;#8217;s class, I can ensure that each object can have its own callback function.&lt;/p&gt;
+
+&lt;p&gt;All that said, this example is a little too complex for my taste. If you can think of something better, leave it in the comments. I&amp;#8217;ll update the post with your example and name.&lt;/p&gt;
+
+&lt;h2 id='method_missing'&gt;method_missing&lt;/h2&gt;
+
+&lt;p&gt;Another cool language feature of Ruby is &lt;code&gt;method_missing&lt;/code&gt;. It&amp;#8217;s the feature that puts the magic in &lt;a href='http://rubyonrails.org'&gt;Rails&amp;#8217;s&lt;/a&gt; &lt;code&gt;find_by_*&lt;/code&gt; methods. You&amp;#8217;ve probably seen them in examples before, but in case you haven&amp;#8217;t, they look like this:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='no'&gt;Post&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;find_by_title&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;Awesomeness!&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+    &lt;span class='no'&gt;User&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;find_by_email&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;bob@example.com&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+    &lt;span class='no'&gt;User&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;find_by_email_and_login&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;bob@example.com&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;bob&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Defining all these &lt;code&gt;find_by_*&lt;/code&gt; methods by hand is nearly impossible as there&amp;#8217;s a large number of combinations and they&amp;#8217;re based on columns in the database. In conditions like these, &lt;code&gt;method_missing&lt;/code&gt; really shines. Let&amp;#8217;s have a look:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;ActiveRecord&lt;/span&gt;&lt;span class='o'&gt;::&lt;/span&gt;&lt;span class='no'&gt;Base&lt;/span&gt;
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;method_missing&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;*&lt;/span&gt;&lt;span class='n'&gt;args&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt;&lt;span class='n'&gt;block&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;to_s&lt;/span&gt; &lt;span class='o'&gt;=~&lt;/span&gt; &lt;span class='sr'&gt;/^find_by_(.+)$/&lt;/span&gt;
+          &lt;span class='n'&gt;run_find_by_method&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='vg'&gt;$1&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;*&lt;/span&gt;&lt;span class='n'&gt;args&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt;&lt;span class='n'&gt;block&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='k'&gt;else&lt;/span&gt;
+          &lt;span class='k'&gt;super&lt;/span&gt; &lt;span class='c1'&gt;# You *must* call super if you don&amp;#39;t handle the&lt;/span&gt;
+                &lt;span class='c1'&gt;# method, otherwise you&amp;#39;ll mess up Ruby&amp;#39;s method&lt;/span&gt;
+                &lt;span class='c1'&gt;# lookup.&lt;/span&gt;
+        &lt;span class='k'&gt;end&lt;/span&gt;
+      &lt;span class='k'&gt;end&lt;/span&gt;
+
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;run_find_by_method&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;attrs&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;*&lt;/span&gt;&lt;span class='n'&gt;args&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt;&lt;span class='n'&gt;block&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='c1'&gt;# Make an array of attribute names&lt;/span&gt;
+        &lt;span class='n'&gt;attrs&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;attrs&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;split&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;_and_&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+
+        &lt;span class='c1'&gt;# #transpose will zip the two arrays together like so:&lt;/span&gt;
+        &lt;span class='c1'&gt;#   [[:a, :b, :c], [1, 2, 3]].transpose&lt;/span&gt;
+        &lt;span class='c1'&gt;#   # =&amp;gt; [[:a, 1], [:b, 2], [:c, 3]]&lt;/span&gt;
+        &lt;span class='n'&gt;attrs_with_args&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='n'&gt;attrs&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='n'&gt;args&lt;/span&gt;&lt;span class='o'&gt;].&lt;/span&gt;&lt;span class='n'&gt;transpose&lt;/span&gt;
+
+        &lt;span class='c1'&gt;# Hash[] will take the passed associative array and turn it&lt;/span&gt;
+        &lt;span class='c1'&gt;# into a hash like so:&lt;/span&gt;
+        &lt;span class='c1'&gt;#   Hash[[[:a, 2], [:b, 4]]] # =&amp;gt; { :a =&amp;gt; 2, :b =&amp;gt; 4 }&lt;/span&gt;
+        &lt;span class='n'&gt;conditions&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;Hash&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='n'&gt;attrs_with_args&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;
+
+        &lt;span class='c1'&gt;# #where and #all are new AREL goodness that will find all&lt;/span&gt;
+        &lt;span class='c1'&gt;# records matching our conditions&lt;/span&gt;
+        &lt;span class='n'&gt;where&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;conditions&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;all&lt;/span&gt;
+      &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Though there&amp;#8217;s a lot to the code above, the &lt;em&gt;most&lt;/em&gt; important bit is in the method missing. Here we use a regex to match anything starting with &amp;#8216;find_by_&amp;#8217; and delegate those to &lt;code&gt;run_find_by_method&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;There are three very important caveats to using &lt;code&gt;method_missing&lt;/code&gt;. First, you &lt;em&gt;must&lt;/em&gt; call &lt;code&gt;super&lt;/code&gt; if you don&amp;#8217;t plan on handling the given method. If you fail to call &lt;code&gt;super&lt;/code&gt;, you will short circuit Ruby&amp;#8217;s method lookup and your code will behave strangely.&lt;/p&gt;
+
+&lt;p&gt;Second, methods executed via &lt;code&gt;method_missing&lt;/code&gt; are slower than their normally defined counterparts. I don&amp;#8217;t have hard numbers on this, but googling around may be able to tell you. If it doesn&amp;#8217;t, let me know in the comments, and I&amp;#8217;ll get numbers.&lt;/p&gt;
+
+&lt;p&gt;Finally, you &lt;em&gt;should&lt;/em&gt; also define a corresponding &lt;code&gt;respond_to?&lt;/code&gt; that reflects that your object responds to these magic methods. For our example above, the &lt;code&gt;respond_to?&lt;/code&gt; would look like so:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;ActiveRecord&lt;/span&gt;&lt;span class='o'&gt;::&lt;/span&gt;&lt;span class='no'&gt;Base&lt;/span&gt;
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;respond_to?&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='n'&gt;meth&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;to_s&lt;/span&gt; &lt;span class='o'&gt;=~&lt;/span&gt; &lt;span class='sr'&gt;/^find_by_.*$/&lt;/span&gt;
+          &lt;span class='kp'&gt;true&lt;/span&gt;
+        &lt;span class='k'&gt;else&lt;/span&gt;
+          &lt;span class='k'&gt;super&lt;/span&gt;
+        &lt;span class='k'&gt;end&lt;/span&gt;
+      &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Though &lt;code&gt;respond_to?&lt;/code&gt; is not used heavily in practice, it &lt;em&gt;is&lt;/em&gt; a core component of duck typing checks. Therefore, it&amp;#8217;s usually a good idea to make sure your &lt;code&gt;respond_to?&lt;/code&gt; matches your &lt;code&gt;method_missing&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id='instance_eval'&gt;instance_eval&lt;/h2&gt;
+
+&lt;p&gt;The final feature we&amp;#8217;ll look at today is &lt;code&gt;instance_eval&lt;/code&gt;. It&amp;#8217;s very much a swiss army knife of a tool, but it really shines in its DSL supporting role. For instance, take the &lt;a href='http://wiki.opscode.com/display/chef/Home'&gt;Chef API&amp;#8217;s&lt;/a&gt; approach to setting up File Templates:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='n'&gt;template&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;/path/to/file.conf&amp;quot;&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt;
+      &lt;span class='n'&gt;source&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;file.conf.erb&amp;quot;&lt;/span&gt;
+      &lt;span class='n'&gt;owner&lt;/span&gt;  &lt;span class='s2'&gt;&amp;quot;trotter&amp;quot;&lt;/span&gt;
+      &lt;span class='n'&gt;mode&lt;/span&gt;   &lt;span class='s2'&gt;&amp;quot;0755&amp;quot;&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Within the &lt;code&gt;template&lt;/code&gt; method, we have access to &lt;code&gt;source&lt;/code&gt;, &lt;code&gt;owner&lt;/code&gt;, and &lt;code&gt;mode&lt;/code&gt; methods that are unavailable outside &lt;code&gt;template&lt;/code&gt;. To make this work, we must execute the block passed to &lt;code&gt;template&lt;/code&gt; within a context where &lt;code&gt;source&lt;/code&gt;, &lt;code&gt;owner&lt;/code&gt;, and &lt;code&gt;mode&lt;/code&gt; are defined. With &lt;code&gt;instance_eval&lt;/code&gt;, this is possible, and we could implement the Chef DSL like so:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;ChefDSL&lt;/span&gt;
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;template&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;path&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt;&lt;span class='n'&gt;block&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='no'&gt;TemplateDSL&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;new&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;path&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt;&lt;span class='n'&gt;block&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+      &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+
+    &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;TemplateDSL&lt;/span&gt;
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;initialize&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;path&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt;&lt;span class='n'&gt;block&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='vi'&gt;@path&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;path&lt;/span&gt;
+        &lt;span class='nb'&gt;instance_eval&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt;&lt;span class='n'&gt;block&lt;/span&gt;
+      &lt;span class='k'&gt;end&lt;/span&gt;
+
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;source&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;source&lt;/span&gt;&lt;span class='p'&gt;);&lt;/span&gt; &lt;span class='vi'&gt;@source&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;source&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt; &lt;span class='k'&gt;end&lt;/span&gt;
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;owner&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;owner&lt;/span&gt;&lt;span class='p'&gt;);&lt;/span&gt;   &lt;span class='vi'&gt;@owner&lt;/span&gt;  &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;owner&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt;  &lt;span class='k'&gt;end&lt;/span&gt;
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;mode&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;mode&lt;/span&gt;&lt;span class='p'&gt;);&lt;/span&gt;     &lt;span class='vi'&gt;@mode&lt;/span&gt;   &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;mode&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt;   &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;The real trick to the above code is the &lt;code&gt;instance_eval&lt;/code&gt; in &lt;code&gt;TemplateDSL&lt;/code&gt;. It takes the supplied block and runs it within the scope of a &lt;code&gt;TemplateDSL&lt;/code&gt; object. This means that the block has access to the &lt;code&gt;source&lt;/code&gt;, &lt;code&gt;owner&lt;/code&gt;, and &lt;code&gt;mode&lt;/code&gt; methods of &lt;code&gt;TemplateDSL&lt;/code&gt;, which it uses to set the appropriate instance variables.&lt;/p&gt;
+
+&lt;p&gt;If in the above example we had not used &lt;code&gt;instance_eval&lt;/code&gt; and had instead defined &lt;code&gt;TemplateDSL#initialize&lt;/code&gt; as follows, then Ruby would raise a &lt;code&gt;NoMethodError&lt;/code&gt;, because the &lt;code&gt;source&lt;/code&gt;, &lt;code&gt;owner&lt;/code&gt;, and &lt;code&gt;mode&lt;/code&gt; methods would not be accessible to the block.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;TemplateDSL&lt;/span&gt;
+      &lt;span class='k'&gt;def&lt;/span&gt; &lt;span class='nf'&gt;initialize&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='n'&gt;path&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt;&lt;span class='n'&gt;block&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+        &lt;span class='vi'&gt;@path&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;path&lt;/span&gt;
+        &lt;span class='n'&gt;block&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;call&lt;/span&gt;
+      &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h2 id='phillyrb'&gt;Philly.rb&lt;/h2&gt;
+
+&lt;p&gt;Hopefully this post helps you see why I think Ruby is such a cool language. If you&amp;#8217;re in the Philly area, I&amp;#8217;m giving a lightening talk at tonight&amp;#8217;s &lt;a href='http://phillyrb.org'&gt;Philly.rb&lt;/a&gt; meeting on this sort of Ruby &amp;#8220;meta magic&amp;#8221;. I&amp;#8217;d love to see you there!&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Crowd Sourcing Business Development Followup</title>
+   <link href="http://www.trottercashion.com/2010/12/13/crowd-sourcing-business-development-followup.html"/>
+   <updated>2010-12-13T00:00:00-08:00</updated>
+   <id>http://www.trottercashion.com/2010/12/13/crowd-sourcing-business-development-followup</id>
+   <content type="html">&lt;h1 id='crowd_sourcing_business_development_followup'&gt;Crowd Sourcing Business Development Followup&lt;/h1&gt;
+&lt;p class='meta'&gt;December 13, 2010 - Philly&lt;/p&gt;
+&lt;p&gt;A few months ago, I wrote a post about &lt;a href='/2010/10/26/crowd-sourcing-business-development.html'&gt;crowd sourcing business development&lt;/a&gt; at Mashion. Sadly, that post did not seem to actually get us any business. So, effective immediately, the official deal is off. This does not mean that we won&amp;#8217;t still offer discounts to select customers or commissions to cool people, it just means that we don&amp;#8217;t have a structured format for doing so. And as always, feel free to contact us if you have any work you would like done. We&amp;#8217;re really good at Rails, JavaScript, and Chef.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Replacing Make With Rake</title>
+   <link href="http://www.trottercashion.com/2010/10/29/replacing-make-with-rake.html"/>
+   <updated>2010-10-29T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/10/29/replacing-make-with-rake</id>
+   <content type="html">&lt;h1 id='replacing_make_with_rake'&gt;Replacing Make With Rake&lt;/h1&gt;
+&lt;p class='meta'&gt;October 29, 2010 - Philly&lt;/p&gt;
+&lt;p&gt;I&amp;#8217;ve been playing with Erlang again lately, and decided to go back through &lt;a href='http://pragprog.com/titles/jaerlang/programming-erlang'&gt;Joe Armstrong&amp;#8217;s book&lt;/a&gt; from a few years ago. In chapter 6 of his book, Joe shows how to compile an Erlang program using the classic &lt;code&gt;make&lt;/code&gt; tool. Naturally, this got me thinking about implementing his code in the Ruby alternative to &lt;code&gt;make&lt;/code&gt;, &lt;code&gt;rake&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id='not_just_for_tasks'&gt;Not Just For Tasks&lt;/h2&gt;
+
+&lt;p&gt;Those of you that think Rake can only be used to define tasks should really take a look at the &lt;a href='http://docs.rubyrake.org/'&gt;documentation&lt;/a&gt;. In the same way that you use Rake to define a task, you can use it to generate a file according to a rule. The following code will look regenerate &lt;code&gt;trotter.beam&lt;/code&gt; anytime that &lt;code&gt;trotter.erl&lt;/code&gt; changes.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='n'&gt;file&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;trotter.beam&amp;#39;&lt;/span&gt; &lt;span class='o'&gt;=&amp;gt;&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;trotter.erl&amp;#39;&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt;
+      &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;erlc trotterl.erl&amp;#39;&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Of course, if I&amp;#8217;m compiling one file, then I&amp;#8217;m probably compiling many. For these cases we use the &lt;code&gt;rule&lt;/code&gt; method. The following code regenerate any beam file when its corresponding erl file has changed.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='n'&gt;rule&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;.beam&amp;#39;&lt;/span&gt; &lt;span class='o'&gt;=&amp;gt;&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;.erl&amp;#39;&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;t&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
+      &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;erlc &lt;/span&gt;&lt;span class='si'&gt;#{&lt;/span&gt;&lt;span class='n'&gt;t&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;source&lt;/span&gt;&lt;span class='si'&gt;}&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h2 id='cleaning_up_after_yourself'&gt;Cleaning Up After Yourself&lt;/h2&gt;
+
+&lt;p&gt;That&amp;#8217;s pretty cool, but now we have a metric ass-ton of &lt;code&gt;*.beam&lt;/code&gt; files laying around our directory. Thankfully, Rake makes it pretty easy to clean up a lot of files as well. Just require &lt;code&gt;rake/clean&lt;/code&gt; and add necessary files to the &lt;code&gt;CLEAN&lt;/code&gt; constant.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='nb'&gt;require&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;rake/clean&amp;#39;&lt;/span&gt;
+    &lt;span class='no'&gt;CLEAN&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;include&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;*.beam&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h2 id='putting_it_all_together'&gt;Putting It All Together&lt;/h2&gt;
+
+&lt;p&gt;Putting this all together, we can make a Rakefile that will compile all the Erlang code that I&amp;#8217;m writing while working through this book.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;    &lt;span class='nb'&gt;require&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;rake/clean&amp;#39;&lt;/span&gt;
+
+    &lt;span class='no'&gt;CLEAN&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;include&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;*.beam&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+    &lt;span class='no'&gt;ERLS&lt;/span&gt;  &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;FileList&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;*.erl&amp;#39;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;
+    &lt;span class='no'&gt;BEAMS&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ERLS&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;ext&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;.beam&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; 
+
+    &lt;span class='n'&gt;rule&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;.beam&amp;#39;&lt;/span&gt; &lt;span class='o'&gt;=&amp;gt;&lt;/span&gt; &lt;span class='s1'&gt;&amp;#39;.erl&amp;#39;&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;t&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
+      &lt;span class='n'&gt;sh&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;erlc &lt;/span&gt;&lt;span class='si'&gt;#{&lt;/span&gt;&lt;span class='n'&gt;t&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;source&lt;/span&gt;&lt;span class='si'&gt;}&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;&lt;/span&gt;
+    &lt;span class='k'&gt;end&lt;/span&gt;
+
+    &lt;span class='n'&gt;task&lt;/span&gt; &lt;span class='ss'&gt;:default&lt;/span&gt; &lt;span class='o'&gt;=&amp;gt;&lt;/span&gt; &lt;span class='no'&gt;BEAMS&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Here I&amp;#8217;ve defined a default task that depends on all &lt;code&gt;.beam&lt;/code&gt; files, which in turn depend on all the &lt;code&gt;.erl&lt;/code&gt; files. Running &lt;code&gt;rake&lt;/code&gt; will cause Rake to check the compile time of each &lt;code&gt;.beam&lt;/code&gt; against its corresponding &lt;code&gt;.erl&lt;/code&gt; file and recompile if necessary. When I&amp;#8217;m done messing around, a simple &lt;code&gt;rake clean&lt;/code&gt; will clear out all the &lt;code&gt;.beam&lt;/code&gt; files, but leave all the &lt;code&gt;.erl&lt;/code&gt; files intact.&lt;/p&gt;
+
+&lt;p&gt;I hope I&amp;#8217;ve shown you that Rake is good for more than just putting together sets of tasks. When you&amp;#8217;re working in a system where you need to generate files on disk, Rake offers some wonderful tools for you.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Crowd Sourcing Business Development</title>
+   <link href="http://www.trottercashion.com/2010/10/26/crowd-sourcing-business-development.html"/>
+   <updated>2010-10-26T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/10/26/crowd-sourcing-business-development</id>
+   <content type="html">&lt;h1 id='crowd_sourcing_business_development'&gt;Crowd Sourcing Business Development&lt;/h1&gt;
+&lt;p class='meta'&gt;October 26, 2010 - Philly&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Update&lt;/em&gt;: The deal below is no longer active. I&amp;#8217;m leaving this blog post on the web though as a matter of historical record.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://mashion.net'&gt;Mashion&lt;/a&gt;, my web development consultancy, will pay you 5% for introducing us to someone that becomes a client. We will pay you 10% if you negotiate the contract for us. Occasionally, we&amp;#8217;ll pay you 15% when we&amp;#8217;re looking for work immediately. We charge $150 per hour and average around 30 hours of work per week per developer. Ergo, if you deliver us a four week contract for two developers, you&amp;#8217;ll make &lt;strong&gt;$3,600&lt;/strong&gt;. For serious.&lt;/p&gt;
+
+&lt;p&gt;Email us at &lt;a href='mailto:info@mashion.net'&gt;info@mashion.net&lt;/a&gt; with deals and read on for details.&lt;/p&gt;
+
+&lt;h2 id='why_it_makes_sense'&gt;Why It Makes Sense&lt;/h2&gt;
+
+&lt;p&gt;Business development takes time, especially when first getting started. In the first four weeks of Mashion, we&amp;#8217;ve had 3 contracts. Two have lasted a week, and one was only two days. We&amp;#8217;ve also had a week and a half of downtime in which we worked on our own projects, while hustling hard to get some more business. As it stands, it feels like we&amp;#8217;ve spent at least &lt;strong&gt;25%&lt;/strong&gt; of our time on business development. That&amp;#8217;s a really big cost, and I think we can crowd source it away.&lt;/p&gt;
+
+&lt;h2 id='how_it_works'&gt;How It Works&lt;/h2&gt;
+
+&lt;p&gt;Currently, we&amp;#8217;re paying 5% of the total contract if you bring a potential customer to us, and they sign a contract within two months. We&amp;#8217;re paying 10% of the total contract if you act as a middle man between us and the customer. You&amp;#8217;re responsible for negotiating the rate with them and getting them to sign a contract that we agree upon. You&amp;#8217;ll get paid when we get paid, and you don&amp;#8217;t get paid if we don&amp;#8217;t get paid. These terms are subject to change, and we&amp;#8217;ll announce all changes either on this blog or on our &lt;a href='http://mashion.net'&gt;website&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Every once in a while, we&amp;#8217;ll offer a 15% bounty to the first person to bring us a signed contract that starts immediately. Follow us on twitter to find out about those times: &lt;a href='http://twitter.com/cashion'&gt;@cashion&lt;/a&gt; and &lt;a href='http://twitter.com/matschaffer'&gt;@matschaffer&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you&amp;#8217;re a potential client yourself, you can get a 10% discount by showing up with a contract ready to sign. If we&amp;#8217;re offering a bounty, you can get a 15% discount by being the first to sign a contract that starts immediately.&lt;/p&gt;
+
+&lt;p&gt;We charge $150 per hour and stay away from fixed-price contracts.&lt;/p&gt;
+
+&lt;p&gt;If you&amp;#8217;ve got some work that you want to send our way, email us at &lt;a href='mailto:info@mashion.net'&gt;info@mashion.net&lt;/a&gt;. If this post hits number one on &lt;a href='http://news.ycombinator.com'&gt;Hacker News&lt;/a&gt;, we may take a day or two to respond. Don&amp;#8217;t worry, we love you for sending us work, and we will &lt;em&gt;definitely&lt;/em&gt; write back.&lt;/p&gt;
+
+&lt;p&gt;Oh, and if you&amp;#8217;re a lawyer, please contact us about writing actual contracts around this business.&lt;/p&gt;
+
+&lt;h2 id='about_us'&gt;About Us&lt;/h2&gt;
+
+&lt;p&gt;If you&amp;#8217;ve read this far, hopefully you&amp;#8217;re thinking of bringing us some business. To do that, you&amp;#8217;ll need to know a little about what we do.&lt;/p&gt;
+
+&lt;p&gt;We&amp;#8217;re a web development consultancy that specializes in Rails. We&amp;#8217;re pretty handy with Javascript and Devops as well. We&amp;#8217;re Agile, pair program, practice TDD, love &lt;a href='http://cukes.info'&gt;Cucumber&lt;/a&gt;, and enjoy teaching. We like to work closely with our clients to deliver a product that everyone is happy with.&lt;/p&gt;
+
+&lt;p&gt;We bill hourly, because we think that fixed price contracts always leave one side feeling screwed. We have two developers and average 30 hours per week per developer.&lt;/p&gt;
+
+&lt;p&gt;We aren&amp;#8217;t designers, but we have &lt;a href='http://thoughtmerchants.com/'&gt;one we like&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;We&amp;#8217;re really good, and we&amp;#8217;re proud of it.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Starting a Company</title>
+   <link href="http://www.trottercashion.com/2010/09/26/mashion.html"/>
+   <updated>2010-09-26T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/09/26/mashion</id>
+   <content type="html">&lt;h1 id='starting_a_company'&gt;Starting a Company&lt;/h1&gt;
+
+&lt;p&gt;So that&amp;#8217;s that, &lt;a href='http://matschaffer.com'&gt;Mat&lt;/a&gt; and I have officially started a company. It&amp;#8217;s a Rails / Javascript / anything else consulting company named &lt;a href='http://mashion.net'&gt;Mashion&lt;/a&gt;. We officially start tomorrow, but we&amp;#8217;ve been working the past two weeks to build up a little bit of business.&lt;/p&gt;
+
+&lt;h2 id='companies_are_work'&gt;Companies Are Work&lt;/h2&gt;
+
+&lt;p&gt;As I&amp;#8217;m starting to find out, running a business is hard work. Over the past two weeks, Mat and I incorporated a company, started discussions with potential clients, got a company credit card, and started to plan our strategy at night while finishing our final two weeks at our old jobs as developers at &lt;a href='http://hoopla.net'&gt;Hoopla&lt;/a&gt;. It feels like we&amp;#8217;ve had a meeting every night for the past two weeks with yet another person looking for some Rails or Javascript help. I&amp;#8217;m really looking forward to next week, when not &lt;em&gt;all&lt;/em&gt; of our client discussions have to be done on off hours.&lt;/p&gt;
+
+&lt;p&gt;As you may imagine, starting a company and finding clients really comes down to task management. To stay on top of things, it&amp;#8217;s absolutely essential that you have a good customer relationship management tool into which you put &lt;em&gt;every last bit&lt;/em&gt; of customer data. We&amp;#8217;re using &lt;a href='http://highrisehq.com'&gt;Highrise&lt;/a&gt;, and it totally rocks. After spending 7 months developing applications for Salesforce, Highrise is a breath of fresh air. So far, its strongest two features are that it&amp;#8217;ll properly file anything you email to it and it puts pictures next to client names. &lt;img alt='Contact Picture' src='/images/2010-09-26-mashion/pictures-with-contacts.jpg' /&gt; I love having a picture next to a name (which you can see over to the right), because it really helps me think of these names on a webpage as people that I know.&lt;/p&gt;
+
+&lt;h2 id='im_terrified'&gt;I&amp;#8217;m Terrified&lt;/h2&gt;
+
+&lt;p&gt;Starting a company is completely terrifying. We&amp;#8217;ve lined up a few weeks of work now, but I&amp;#8217;m still afraid that the pipeline will dry up on a moment&amp;#8217;s notice. We&amp;#8217;re currently a small fish in a giant pond, where a &lt;a href='http://pivotallabs.com/'&gt;number&lt;/a&gt; of &lt;a href='http://hashrocket.com'&gt;successful&lt;/a&gt; &lt;a href='http://thoughtbot.com'&gt;companies&lt;/a&gt; are already established. Outside the stress of competition, the economy could always decide to tank again. I try not to think about that, but it&amp;#8217;s a pretty real possibility. So yea, this could completely blow up in my face, and that has me scared pretty shitless.&lt;/p&gt;
+
+&lt;h2 id='were_qualified'&gt;We&amp;#8217;re Qualified&lt;/h2&gt;
+
+&lt;p&gt;However, I&amp;#8217;m not going to let the fear drive me away. I think we can beat (or better yet: work with) the big guys in certain cases. We&amp;#8217;re a tiny company, but we&amp;#8217;re extremely talented. When a client needs a chisel instead of a sledge hammer, we&amp;#8217;ll be there.&lt;/p&gt;
+
+&lt;p&gt;We&amp;#8217;ve spent the past our lives learning everything we can and subconsciously preparing for this moment. The &lt;a href='/'&gt;talks I&amp;#8217;ve given, the books I&amp;#8217;ve written&lt;/a&gt;, and work I&amp;#8217;ve done have all lead to this. We are definitely Rails and Javascript experts, and we&amp;#8217;ll help any team learn to perform at its full potential.&lt;/p&gt;
+
+&lt;h2 id='our_future'&gt;Our Future&lt;/h2&gt;
+
+&lt;p&gt;With our future starting now, our primary focus is on finding more clients. We want companies and teams that need help improving their development process or kickstarting a new product and think that we can give them the boost they need. If you&amp;#8217;re interested, &lt;a href='mailto:trotter@mashion.net'&gt;email me&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;After lining up some clients, we also want to spend a little time on products. &lt;a href='http://simulchart.com'&gt;Simulchart&lt;/a&gt; has been sitting neglected for the past month and is in need of some development love. Our hope is to turn it into a for pay product by the end of the year. After that, we&amp;#8217;ve got a million other small product ideas in mind, and I can&amp;#8217;t wait to show them to you.&lt;/p&gt;
+
+&lt;h2 id='the_beginning'&gt;The Beginning&lt;/h2&gt;
+
+&lt;p&gt;Overall, this feels like the best career decision I&amp;#8217;ve ever made. It&amp;#8217;s simultaneously terrifying and exciting, but I can&amp;#8217;t think of a better reason to live with permanent butterflies in my stomach. No matter what happens, Mat and I are going to make the best of this experience and come out better for it. Besides, if all else fails, at least I&amp;#8217;m going to get to work on some cool stuff. Isn&amp;#8217;t that what all programmers dream of anyway?&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Simulchart: Realtime charts for everyone</title>
+   <link href="http://www.trottercashion.com/2010/08/30/simulchart.html"/>
+   <updated>2010-08-30T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/08/30/simulchart</id>
+   <content type="html">&lt;h1 id='simulchart_realtime_charts_for_everyone'&gt;Simulchart: Realtime charts for everyone&lt;/h1&gt;
+
+&lt;p&gt;This past weekend was &lt;a href='http://nodeknockout.com/'&gt;node knockout&lt;/a&gt;, so @matschaffer and @thoughtmerchant and I teamed up to create &lt;a href='http://simulchart.com/'&gt;Simulchart&lt;/a&gt;, a platform for creating realtime charts that you can embed anywhere:&lt;/p&gt;
+&lt;iframe frameBorder='0' src='http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/iframe?width=700&amp;amp;height=200' style='width: 700px; height: 200px;'&gt; &lt;/iframe&gt;
+&lt;h2 id='sending_data'&gt;Sending Data&lt;/h2&gt;
+
+&lt;p&gt;What I really like about Simulcharts is how easy it is to send data to the chart. To change the values in the chart above, all you need to do is run the following on your command line:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -d value=342 \
+  http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/appendValue&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That will send send a &lt;code&gt;POST&lt;/code&gt; to &lt;code&gt;http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/appendValue&lt;/code&gt; with a post body of &lt;code&gt;value=342&lt;/code&gt;. If you run that command right now, you will see the chart move.&lt;/p&gt;
+
+&lt;p&gt;Alternately, you could write a Ruby, Java, Python, or whatever program to monitor any information you care about and post it to that url. Then embed the chart on a dashboard page and watch all your metrics as they fly by. The chart is highly customizable, but only width and height customization options are currently exposed (sorry, we only had the weekend). When the code freeze for node knockout is over, we&amp;#8217;ll update it to allow for more tweaking.&lt;/p&gt;
+
+&lt;h2 id='we_rock'&gt;We Rock&lt;/h2&gt;
+
+&lt;p&gt;Overall, I&amp;#8217;m really proud of what we managed to accomplish in just one weekend. My team was rock solid, and I think our entry will only improve as a product over time. Sadly, we did run into a few scaling issues with node, which we were never able to fully figure out. So if you&amp;#8217;re not seeing a graph, be sure to reload the page. It&amp;#8217;ll show up after a few requests.&lt;/p&gt;
+
+&lt;p&gt;If you like what we made, please, please vote us highly one our &lt;a href='http://nodeknockout.com/teams/awesometown'&gt;team page&lt;/a&gt;. We really appreciate your support, and your votes will help us validate that Simulcharts is something we should develop further. Also, look forward to more posts this week about how we implemented certain features and how to do a system load chart like we have on our &lt;a href='http://simulchart.com/demos'&gt;demo page&lt;/a&gt;.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Startups: Don't Hire Frontend or Backend Webdevs</title>
+   <link href="http://www.trottercashion.com/2010/07/07/startups-dont-hire-frontend-or-backend-webdevs.html"/>
+   <updated>2010-07-07T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/07/07/startups-dont-hire-frontend-or-backend-webdevs</id>
+   <content type="html">&lt;h1&gt;Startups: Don&amp;#8217;t Hire Frontend or Backend Webdevs&lt;/h1&gt;
+&lt;p&gt;I&amp;#8217;m tired of seeing job postings asking for frontend or backend web developers. Most small startups (by which I mean fewer than 20 people) don&amp;#8217;t have enough work to justify splitting the team into frontend and backend components. Instead, you&amp;#8217;re better off splitting your team into subteams for each feature that needs to be completed. Within these subteams, one member may be better at Javascript and the other at ActiveRecord, but they should all be competent in both. I&amp;#8217;ve yet to see a company hire a developer that &lt;strong&gt;only&lt;/strong&gt; does Javascript, &lt;span class=&quot;caps&quot;&gt;HTML&lt;/span&gt;, and &lt;span class=&quot;caps&quot;&gt;CSS&lt;/span&gt; who isn&amp;#8217;t soon asked to do Ruby, &lt;span class=&quot;caps&quot;&gt;PHP&lt;/span&gt;, or Python.&lt;/p&gt;
+&lt;p&gt;Of course, there are exceptions to this rule. For one, you may be writing a website with a really small frontend component and a giant &lt;span class=&quot;caps&quot;&gt;API&lt;/span&gt;. However, you&amp;#8217;d still be an idiot for hiring a frontend developer to manage that one component. You&amp;#8217;d be much better off getting one of your kickass &lt;span class=&quot;caps&quot;&gt;API&lt;/span&gt; developers to spend a little time on the website portion, which would free salary space to hire another kickass &lt;span class=&quot;caps&quot;&gt;API&lt;/span&gt; developer.&lt;/p&gt;
+&lt;p&gt;In summary, the distinction of frontend vs backend doesn&amp;#8217;t make sense for small companies. Everyone is expected to wear many hats at a startup, so there&amp;#8217;s not really a chance that your roles will be segmented that well. Instead post job listings asking for a skilled web developer. Then you&amp;#8217;ll get what you actually need.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>NOSQL Summer: Eventually Consistent</title>
+   <link href="http://www.trottercashion.com/2010/06/17/no-sql-summer-eventually-consistent.html"/>
+   <updated>2010-06-17T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/06/17/no-sql-summer-eventually-consistent</id>
+   <content type="html">&lt;h1&gt;&lt;span class=&quot;caps&quot;&gt;NOSQL&lt;/span&gt; Summer: Eventually Consistent&lt;/h1&gt;
+&lt;p&gt;Last night was Philly&amp;#8217;s first &lt;a href=&quot;http://nosqlsummer.org/&quot;&gt;&lt;span class=&quot;caps&quot;&gt;NOSQL&lt;/span&gt; Summer&lt;/a&gt; meeting, and it totally rocked. We packed a 45th floor of the &lt;a href=&quot;http://en.wikipedia.org/wiki/Comcast_Center_(office_building)&quot;&gt;Comcast Center&lt;/a&gt; with 18 people ready and willing to talk about Dan Pritchett&amp;#8217;s &lt;a href=&quot;http://nosqlsummer.org/paper/base-vs-acid&quot;&gt;&lt;span class=&quot;caps&quot;&gt;BASE&lt;/span&gt; paper&lt;/a&gt;. The conversation was really good, and I definitely feel like I learned more than I would have by reading the paper without discussion. If you&amp;#8217;re interested, our next meeting is June 30th, and we&amp;#8217;ll be covering Leslie Lamport&amp;#8217;s &lt;a href=&quot;http://nosqlsummer.org/paper/byzantine-generals&quot;&gt;The Byzantine Generals Problem&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Of course, I got a little overachiever for last night&amp;#8217;s meeting and also read through Werner Vogel&amp;#8217;s paper &lt;a href=&quot;http://nosqlsummer.org/paper/eventually-consistent&quot;&gt;Eventually Consistent&lt;/a&gt;. It dovetails quite nicely with the &lt;span class=&quot;caps&quot;&gt;BASE&lt;/span&gt; paper and helps to illustrate that the tradeoff between consistency and availability is not binary. Indeed, there are varying levels of eventual consistency that can be demanded (such as read-your-writes and session consistency), which will then result in more or less availability. Another interesting part of the paper explains how you can have strong consistency without actually writing to all nodes. As long as the number of nodes to which you immediately replicate data and the number of nodes from which you read is greater than the number of nodes total (R+W&amp;gt;N), you will never read stale data, because at least one read will always overlap with the a good write. Any cases where R+W &amp;lt;= N then result in eventual consistency. It&amp;#8217;s important to note that R+W can be an ever changing number, as network partitions may affect how many nodes are available at a given time and therefore affect how many write or read nodes you require. Overall, I think this paper is an easy read that can help the beginner understand eventual consistency before trying a more difficult paper like Amazon&amp;#8217;s Dynamo.&lt;/p&gt;
+&lt;p&gt;As you may be able to imagine, I&amp;#8217;m quite excited about &lt;span class=&quot;caps&quot;&gt;NOSQL&lt;/span&gt; Summer. I hope even more of you come to the next Philly meeting. I&amp;#8217;m sure we&amp;#8217;ll continue to learn a lot over the course of this summer.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Thoughts of NOSQL Summer</title>
+   <link href="http://www.trottercashion.com/2010/06/15/thoughts-of-nosql-summer.html"/>
+   <updated>2010-06-15T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/06/15/thoughts-of-nosql-summer</id>
+   <content type="html">&lt;h1&gt;Thoughts of &lt;span class=&quot;caps&quot;&gt;NOSQL&lt;/span&gt; Summer&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;June 15, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;I&amp;#8217;m taking part in the &lt;a href=&quot;http://nosqlsummer.org/city/philadelphia&quot;&gt;Philly chapter&lt;/a&gt; of &lt;a href=&quot;http://nosqlsummer.org/&quot;&gt;&lt;span class=&quot;caps&quot;&gt;NOSQL&lt;/span&gt; Summer&lt;/a&gt; and recently read the &lt;a href=&quot;http://nosqlsummer.org/paper/base-vs-acid&quot;&gt;&lt;span class=&quot;caps&quot;&gt;BASE&lt;/span&gt; paper&lt;/a&gt;, which is our first &amp;#8220;assignment&amp;#8221;. In the paper, Dan Pritchett makes the assertion that any service&amp;#8217;s uptime is the product of its uptime and the uptimes of all the services on which it depends. This means that even if your application server has an uptime of 99.999%, two database shards an uptime of 99% each will bring your overall application availability down to 98%. As you increase the number of shards, your overall uptime will continue to decrease.&lt;/p&gt;
+&lt;p&gt;At its root, the decrease in uptime is a result of a coupling problem. As a service becomes temporally coupled to more services, the probability of it being available is the probability that both its own code is available and the service it depends on is available. Thankfully, &lt;span class=&quot;caps&quot;&gt;BASE&lt;/span&gt; provides a way to reduce this temporal coupling. Its approach of &amp;#8220;basically available, soft state, eventually consistent&amp;#8221; accepts that different data stores can become temporarily out of sync, but ensures that they will eventually become consistent.&lt;/p&gt;
+&lt;p&gt;I&amp;#8217;m by no means a &lt;span class=&quot;caps&quot;&gt;NOSQL&lt;/span&gt; expert at this point, but I&amp;#8217;m really digging &lt;span class=&quot;caps&quot;&gt;NOSQL&lt;/span&gt; Summer so far. Our first meeting is tomorrow, and the paper lineup so far looks fantastic. If there&amp;#8217;s no &lt;span class=&quot;caps&quot;&gt;NOSQL&lt;/span&gt; Summer chapter in your area, you should definitely start one. I think it&amp;#8217;ll make for a great summer and help us prepare our applications for the highly available world.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Recorder Mock Makes JS Testing Easier</title>
+   <link href="http://www.trottercashion.com/2010/05/06/recorder-mock-makes-js-testing-easier.html"/>
+   <updated>2010-05-06T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/05/06/recorder-mock-makes-js-testing-easier</id>
+   <content type="html">&lt;h1&gt;Recorder Mock Makes JS Testing Easier&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;May 6, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;After reading last week&amp;#8217;s post on &lt;a href=&quot;/2010/04/27/headless-raphael-testing.html&quot;&gt;headless raphael testing&lt;/a&gt;, my buddy Mat said, &amp;#8220;that mock is ugly and repetitive.&amp;#8221; Thankfully, he then went out and wrote &lt;a href=&quot;http://github.com/matschaffer/recorderMock.js&quot;&gt;RecorderMock.js&lt;/a&gt; and wrote a &lt;a href=&quot;http://matschaffer.com/2010/04/mock-jquery-javascript-libraries/&quot;&gt;blog post&lt;/a&gt; about it. In light of his awesome, I&amp;#8217;m going to show how to use RecorderMock.js to replace the ugly mock from my earlier post.&lt;/p&gt;
+&lt;p&gt;First, we&amp;#8217;re going to remove the old Raphael mock that we wrote in the last post. Here&amp;#8217;s the old code:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;attr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// store text calls&lt;/span&gt;
+      &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;slice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// store animate calls&lt;/span&gt;
+      &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;slice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;clear&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;The new code is a much simpler one liner:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;recorderMock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;text&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;animate&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;attr&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;As a bonus, that one line gives us a more functionality than before, in that we can now inspect attr calls as well.&lt;/p&gt;
+&lt;p&gt;RecorderMock.js has a slightly different interface than our earlier mock, so we&amp;#8217;ll need to change the test code as well. That file is pretty large, so I&amp;#8217;m only going to show the difference.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;diff&quot;&gt;&lt;span class=&quot;gd&quot;&gt;- var text = Raphael.textCalls;&lt;/span&gt;
+&lt;span class=&quot;gi&quot;&gt;+ var text = Raphael.text.__calls;&lt;/span&gt;
+
+&lt;span class=&quot;gd&quot;&gt;- var animate = Raphael.animateCalls;&lt;/span&gt;
+&lt;span class=&quot;gi&quot;&gt;+ var animate = Raphael.animate.__calls;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;In addition, all usages of &lt;code&gt;text[n]&lt;/code&gt; need to be replaces with &lt;code&gt;text[n].arguments&lt;/code&gt;, because RecorderMock.js stores more than just the arguments of the call. You can do cool things likes &lt;code&gt;Raphael.attr.__calls[0].previous&lt;/code&gt; to retrieve the node on which &lt;code&gt;attr&lt;/code&gt; was called. That&amp;#8217;s a pretty handy feature for determining if you&amp;#8217;re setting the correct text node&amp;#8217;s color to black.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Chuusha - Share Variables Across CSS and Javascript</title>
+   <link href="http://www.trottercashion.com/2010/04/29/chuusha-share-variables-across-css-and-javascript.html"/>
+   <updated>2010-04-29T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/04/29/chuusha-share-variables-across-css-and-javascript</id>
+   <content type="html">&lt;h1&gt;Chuusha &amp;#8211; Share Variables Across &lt;span class=&quot;caps&quot;&gt;CSS&lt;/span&gt; and Javascript&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;April 29, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;caps&quot;&gt;CSS&lt;/span&gt; doesn&amp;#8217;t have variables. This probably doesn&amp;#8217;t come as news to you, and I&amp;#8217;m sure you&amp;#8217;ve felt the pain. Even worse is that I&amp;#8217;m doing a lot of drawing using Raphael, and I have color and size constants that are hardcoded in both &lt;span class=&quot;caps&quot;&gt;CSS&lt;/span&gt; and JavaScript. It&amp;#8217;s really brittle, and brittle is bad.&lt;/p&gt;
+&lt;p&gt;So how can we fix this problem? &lt;a href=&quot;http://sass-lang.com/&quot;&gt;Sass&lt;/a&gt; is one option, and it&amp;#8217;s pretty damn sweet. Sadly, it too can&amp;#8217;t share variables with JavaScript, and it&amp;#8217;s ever so slightly divergent from &lt;span class=&quot;caps&quot;&gt;CSS&lt;/span&gt;. I don&amp;#8217;t like forcing my team members (especially the designery types) to learn too many new things. So like any good developer, I wrote my own library! (Be sure to read that last sentence with all the sarcasm it deserves). Don&amp;#8217;t worry though, you won&amp;#8217;t have to learn anything new to use it.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;http://github.com/trotter/chuusha&quot;&gt;Chuusha&lt;/a&gt; is &lt;a href=&quot;http://rack.rubyforge.org/&quot;&gt;Rack&lt;/a&gt; middleware that pre-renders css and javascript erb templates. Erb is the default templating engine for Rails, which means that if you can do rails views, you can use Chuusha. All you need to do is change your file extension from &lt;code&gt;.css&lt;/code&gt; or &lt;code&gt;.js&lt;/code&gt; to &lt;code&gt;.css.erb&lt;/code&gt; or &lt;code&gt;.js.erb&lt;/code&gt; (to be honest, anything in public with a &lt;code&gt;.erb&lt;/code&gt; can be rendered with Chuusha). So let&amp;#8217;s have a look at what this means with a simple template:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;css&quot;&gt;&lt;span class=&quot;c&quot;&gt;/* ./public/stylesheets/application.css.erb */&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;&amp;lt;%&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;highlight_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;#3c3cff&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;.highlight&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;color&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;%=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;highlight_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;img&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;.highlight&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;border&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1px&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;solid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;highlight_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;As you can see, we&amp;#8217;re able to share &lt;code&gt;highlight_color&lt;/code&gt; (a nice shade of blue), with two different elements in our stylesheet. Of course, this doesn&amp;#8217;t show off sharing &lt;code&gt;highlight_color&lt;/code&gt; with anything in javascript. For that, we need to take a look at how Chuusha gets loaded:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# ./config.ru&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;chuusha&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;PUBLIC_DIR&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dirname&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;__FILE__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;/public&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Chuusha&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Rack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;PUBLIC_DIR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:variables&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:highlight_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;#3c3cff&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;URLMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;YOUR_RAILS_APP&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Application&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Here, we&amp;#8217;re passing a configuration hash to Chuusha. This hash contains a variables key, which we can use to store a set of constants that we want to share between css and javascript.&lt;/p&gt;
+&lt;p&gt;With Chuusha properly loaded, we can now use &lt;code&gt;highlight_color&lt;/code&gt; in any of our templates like so:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// ./public/javascripts/application.js.erb&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;draw-here&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;      &lt;span class=&quot;c1&quot;&gt;// Init Raphael&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Make a 50x50 rect&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;attr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;fill&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;%&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;highlight_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Color it&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;css&quot;&gt;&lt;span class=&quot;c&quot;&gt;/* ./public/stylesheets/application.css.erb */&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;.highlight&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;color&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;%=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;highlight_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;img&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;.highlight&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;border&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1px&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;solid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;highlight_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;In this example, we&amp;#8217;ve shared &lt;code&gt;highlight_color&lt;/code&gt; from our configuration file with both &lt;code&gt;application.js&lt;/code&gt; and &lt;code&gt;application.css.erb&lt;/code&gt;. Instead of hardcoding &lt;code&gt;#3c3cff&lt;/code&gt; in three places, we&amp;#8217;ve reduced it down to one. If a designer comes along later and asks us to change the highlight color, we know where to go :-)&lt;/p&gt;
+&lt;p&gt;As the configuration hash grows in size, it&amp;#8217;s good to put it somewhere other than in your rackup config. For this reason, Chuusha can also accept a path to a yaml configuration doc via a string:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Chuusha&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Rack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;PUBLIC_DIR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dirname&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;__FILE__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;/chuusha.yml&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&amp;#8230; and the yaml&amp;#8230;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;yaml&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# ./chuusha.yml&lt;/span&gt;
+
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;l-Scalar-Plain&quot;&gt;highlight_color&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;#3c3cff&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;To install Chuusha and start using it today, you only need to install the gem (shown below) and setup your rack config. Only files with a &lt;code&gt;.erb&lt;/code&gt; extension will be processed, so you can dip your toe in the water before using it everywhere.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem install chuusha
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;So that&amp;#8217;s Chuusha. Let me know what you think. I&amp;#8217;ve got a number of enhancements in mind for the next few weeks (the first of which is a command line runner to make integration with js testing easier). The &lt;a href=&quot;http://github.com/trotter/chuusha&quot;&gt;code&amp;#8217;s on github&lt;/a&gt;, so feel free to fork it and send me pull requests.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Headless Raphael Testing</title>
+   <link href="http://www.trottercashion.com/2010/04/27/headless-raphael-testing.html"/>
+   <updated>2010-04-27T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/04/27/headless-raphael-testing</id>
+   <content type="html">&lt;h1&gt;Headless Raphael Testing&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;April 27, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;I&amp;#8217;m going to debunk two popular myths today: Testing Javascript outside the browser is impossible and testing graphics libraries is impossible. At &lt;a href=&quot;http://hoopla.net&quot;&gt;Hoopla&lt;/a&gt;, &lt;a href=&quot;http://matschaffer.com&quot;&gt;Mat&lt;/a&gt; and I have found through experience that these myths are untrue. We have a test suite running 157 tests in &lt;a href=&quot;http://visionmedia.github.com/jspec/&quot;&gt;jSpec&lt;/a&gt; and &lt;a href=&quot;http://www.mozilla.org/rhino/&quot;&gt;Rhino&lt;/a&gt; that tests every graph and chart that we draw on our site. Today, I&amp;#8217;m going to show you how to unit test the code for this (be sure to click the box):&lt;/p&gt;
+&lt;div id=&quot;draw-here-explosion&quot; style=&quot;height: 200px; width: 400px; background: #ccf;&quot;&gt;
+&lt;/div&gt;
+&lt;p&gt;First, you&amp;#8217;re going to need the JSpec gem, which includes Rhino with it. Assuming you have Ruby installed, run this on your command line:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem install jspec
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Now we need to setup a jspec directory:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jspec init explosion
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Awesome, now let&amp;#8217;s make a test file:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// in ./explosion/spec/unit/spec.js&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;describe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Explosion&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;explosion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;before_each&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Raphael is a mock, we&amp;#39;ll discuss that in a minute&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Make our explosion object&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;explosion&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Explosion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;explosion-draw-here&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;should draw the text on init&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// textCalls will give us all the textCalls we made.&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;eql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Raphael&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;eql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;120&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Awesome!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;should explode&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;explosion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;explode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;eql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;90&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+                                &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;bounce&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// We only test the first three args, because testing &lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// the callback is too hard for this example :-)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;slice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;eql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
+      &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;180&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;170&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;should reform&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;explosion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;reform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;eql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;360&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+                                &lt;span class=&quot;mi&quot;&gt;1300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;eql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;360&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;120&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+                                &lt;span class=&quot;mi&quot;&gt;1300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;There&amp;#8217;s a few things going on above. First, we&amp;#8217;re setting up our Raphael mock at the beginning of each test. We&amp;#8217;ll define the mock in a minute, but suffice to say that we&amp;#8217;re not going to &lt;em&gt;actually&lt;/em&gt; call Raphael in our test. Second, we have three tests. The first tests that we wrote out some text, the second that we can explode, and the third that we will reform. A number of constants are hardcoded here for purposes of simplifying the example, but in real life code hardcoding is bad.&lt;/p&gt;
+&lt;p&gt;So about that Raphael mock&amp;#8230; let&amp;#8217;s take a look at how it&amp;#8217;s implemented:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;attr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// store text calls&lt;/span&gt;
+      &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;slice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// store animate calls&lt;/span&gt;
+      &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;slice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;clear&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animateCalls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;As you can see, this mock just stores the various method invocations into arrays. In the implementation below, you&amp;#8217;ll see us make calls to &lt;code&gt;text()&lt;/code&gt; and &lt;code&gt;animate()&lt;/code&gt;. On the page, these will be called on Raphael proper. In tests, they will be called on our Raphael mock, where we&amp;#8217;ll store the invocation and assert that it was called correctly. This allows us to run these test without an actual browser, because we never actually use the real Raphael library in our code. Similarly, this approach can be applied to jQuery (something that infact do at &lt;a href=&quot;http://hoopla.net&quot;&gt;Hoopla&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;So now let&amp;#8217;s take a look at the implementation:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;js&quot;&gt;  &lt;span class=&quot;c1&quot;&gt;// in ./explosion/lib/yourlib.js&lt;/span&gt;
+
+  &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Explosion&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;labels&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;drawText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;Explosion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;drawText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;raphael&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Raphael&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;attr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;font&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;14px Helvetica, Arial, sans-serif&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;awesome&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;120&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Awesome!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;attr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;font&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;14px Helvetica, Arial, sans-serif&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;explode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;90&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+                                  &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;bounce&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;awesome&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;180&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;170&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+                                  &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;nx&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;reform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;reform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;360&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+                                  &lt;span class=&quot;mi&quot;&gt;1300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;awesome&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;360&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;120&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+                                  &lt;span class=&quot;mi&quot;&gt;1300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Much like &lt;a href=&quot;/2010/04/22/i-heart-raphael.html&quot;&gt;last week&amp;#8217;s post&lt;/a&gt;, we initialize a Raphael object and use it to draw. The three functions from the test are here. We &lt;strong&gt;know&lt;/strong&gt; they work because of the unit tests.&lt;/p&gt;
+&lt;p&gt;The final step is to run the tests:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jspec run --rhino &lt;span class=&quot;c&quot;&gt;# Run the tests once&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jspec --rhino     &lt;span class=&quot;c&quot;&gt;# Run the tests each time we change a file&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Hopefully this post has shown that it is possible to do headless testing of graphical Javascript libraries. As I said before, we&amp;#8217;re using this strategy heavily, and it&amp;#8217;s working great for us. By mocking out Raphael (and jQuery) we&amp;#8217;re able to run our entire test suite headless in less than a second. That means we can code awesome, graphically rich sites in a fraction of the time it takes other people. I think that&amp;#8217;s pretty awesome.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; I&amp;#8217;ve written a &lt;a href=&quot;/2010/05/06/recorder-mock-makes-js-testing-easier.html&quot;&gt;follow-up post&lt;/a&gt; showing how to use &lt;a href=&quot;http://matschaffer.com&quot;&gt;Mat&amp;#8217;s&lt;/a&gt; &lt;a href=&quot;http://github.com/matschaffer/recorderMock.js&quot;&gt;RecorderMock.js&lt;/a&gt; to clean up the Raphael mock.&lt;/p&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;/javascripts/jquery-1.4.2.min.js&quot;&gt;&lt;/script&gt;&lt;script type=&quot;text/javascript&quot; src=&quot;/javascripts/raphael-1.3.2-min.js&quot;&gt;&lt;/script&gt;&lt;script type=&quot;text/javascript&quot;&gt;
+var Explosion = function (div) {
+  this.r = Raphael(div, 400, 200);
+  this.labels = {};
+  this.drawText();
+};
+
+Explosion.prototype = {
+  drawText: function () {
+    this.labels.raphael = this.r.text(200, 100, &quot;Raphael&quot;).
+      attr({font: &quot;14px Helvetica, Arial, sans-serif&quot;});
+    this.labels.awesome = this.r.text(200, 120, &quot;Awesome!&quot;).
+      attr({font: &quot;14px Helvetica, Arial, sans-serif&quot;});
+  },
+
+  explode: function () {
+    var self = this;
+    this.labels.raphael.animate({rotation: 90,  x: 30,  y: 30}, 1000, &quot;bounce&quot;);
+    this.labels.awesome.animate({rotation: 180, x: 300, y: 170}, 1000, &quot;&lt;&gt;&quot;, function () {
+      setTimeout(function () {
+        self.reform();
+      }, 400);
+    });
+  },
+
+  reform: function () {
+    this.labels.raphael.animate({rotation: 360, x: 200, y: 100}, 1300, &quot;&lt;&quot;);
+    this.labels.awesome.animate({rotation: 360, x: 200, y: 120}, 1300, &quot;&gt;&quot;);
+  }
+};
+
+  var explosion = new Explosion('draw-here-explosion');
+  $('#draw-here-explosion').bind('click', function () {
+    explosion.explode()
+  });
+&lt;/script&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Thank You Github</title>
+   <link href="http://www.trottercashion.com/2010/04/23/thank-you-github.html"/>
+   <updated>2010-04-23T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/04/23/thank-you-github</id>
+   <content type="html">&lt;h1&gt;Thank You Github&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;April 20, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/2010/04/22/i-heart-raphael.html&quot;&gt;Yesterday&amp;#8217;s post&lt;/a&gt; was apparently pretty popular. If you look at the image below, you&amp;#8217;ll see that over the past 24 hours (there&amp;#8217;s no timestamp, so just trust me), I had 9,001 visits and 10,101 page views. Given that my previous high was around 50, I&amp;#8217;m a little excited.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2010-04-23-analytics.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;As some of you may remember from &lt;a href=&quot;/2010/04/19/separating-content-from-style.html&quot;&gt;Monday&amp;#8217;s post&lt;/a&gt;, I&amp;#8217;m a fan of separating content from style. This is where &lt;a href=&quot;http://github.com&quot;&gt;Github&lt;/a&gt; comes in. I&amp;#8217;m hosting my blog there using mojombo&amp;#8217;s &lt;a href=&quot;http://github.com/mojombo/jekyll&quot;&gt;jekyll&lt;/a&gt;, a static site generator written in Ruby.&lt;/p&gt;
+&lt;p&gt;Much of what I like about &lt;a href=&quot;http://github.com/schacon/showoff&quot;&gt;showoff&lt;/a&gt; is what I like about jekyll as well. When I&amp;#8217;m working on the content, there&amp;#8217;s nothing else on my mind. It&amp;#8217;s just me, a terminal, and this post. I&amp;#8217;m able to focus on what I want to say with no other distractions. As a bonus, Github&amp;#8217;s &lt;a href=&quot;http://pages.github.com/&quot;&gt;pages&lt;/a&gt; service will generate a static copy and host it for me. This meant no headaches yesterday. I was free to happily watch my traffic grow. Thanks Github, you make life better in so many ways.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>I &lt;3 Raphael</title>
+   <link href="http://www.trottercashion.com/2010/04/22/i-heart-raphael.html"/>
+   <updated>2010-04-22T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/04/22/i-heart-raphael</id>
+   <content type="html">&lt;h1&gt;I &amp;lt;3 Raphael&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;April 22, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;I know all the hype these days is around HTML5&amp;#8217;s canvas, but can I talk up &lt;span class=&quot;caps&quot;&gt;SVG&lt;/span&gt; for a sec? That shit rocks. Here at &lt;a href=&quot;http://hoopla.net&quot;&gt;Hoopla&lt;/a&gt;, we have a number of info graphics on our site like charts and bar graphs and whatnot. They need to be generated on the fly using data from our database. As we saw it, we had two options: flash or javascript. Flash was a no-go, because it would be one more thing for developers on the team to know. Canvas was out on account of its lack of support in IE. &lt;span class=&quot;caps&quot;&gt;SVG&lt;/span&gt; on the other hand&amp;#8230; well, &lt;a href=&quot;http://raphaeljs.com/&quot;&gt;Raphael&lt;/a&gt; (a kickass javascript library) gives cross browser &lt;span class=&quot;caps&quot;&gt;SVG&lt;/span&gt; support that works all the way back to IE6. Total Win!&lt;/p&gt;
+&lt;p&gt;As an added benefit, it turns out that Raphael is crazy easy to work with. Let&amp;#8217;s have a look at a small example (be sure to hover over the square):&lt;/p&gt;
+&lt;div id=&quot;draw-here-raphael&quot; style=&quot;height: 200px; width: 400px; background: #666;&quot;&gt;
+&lt;/div&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;/javascripts/jquery-1.4.2.min.js&quot;&gt;&lt;/script&gt;&lt;script type=&quot;text/javascript&quot; src=&quot;/javascripts/raphael-1.3.2-min.js&quot;&gt;&lt;/script&gt;&lt;script type=&quot;text/javascript&quot;&gt;
+  var r = new Raphael(&quot;draw-here-raphael&quot;, 400, 200),
+      position = 'left',
+      rect = r.rect(20, 20, 50, 50).attr({&quot;fill&quot;: &quot;#fbb&quot;});
+  
+  $(rect.node).mouseover(function () {
+    if (position === 'left') {
+      rect.animate({x: 300, y: 100}, 400, &quot;&lt;&gt;&quot;);
+      position = 'right';
+    } else {
+      rect.animate({x: 20, y: 20 }, 800, &quot;bounce&quot;);
+      position = 'left';
+    }
+  });
+
+  setInterval(function () {
+    rect.rotate(1);
+  }, 10);
+&lt;/script&gt;&lt;p&gt;Pretty cool, right? All that was accomplished with this little bit of js:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;js&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Make a raphael&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Raphael&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;draw-here-raphael&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Store where the box is&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;position&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Make our pink rectangle&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;attr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;fill&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;#fbb&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Note JQuery is adding the mouseover. SVG == html nodes&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mouseover&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;position&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;position&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;right&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;animate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;800&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;bounce&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;position&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Make that sucker rotate&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;setInterval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rotate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Definitely take note of the fact that &lt;a href=&quot;http://jquery.com&quot;&gt;jQuery&lt;/a&gt; can be used to manipulate the svg nodes. That&amp;#8217;s been very helpful to us when adding hovers and other cool effects.&lt;/p&gt;
+&lt;p&gt;If you want to get started with Raphael, have a look at their &lt;a href=&quot;http://raphaeljs.com/reference.html&quot;&gt;documentation&lt;/a&gt; for all the functions available. I highly recommend it as an easy to use, cross platform drawing library. Hell, it even runs on the iPad and iPhone :-)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; I&amp;#8217;ve written a &lt;a href=&quot;/2010/04/27/headless-raphael-testing.html&quot;&gt;follow-up post&lt;/a&gt; that shows how to unit test Raphael libraries.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Logrotate For Rails</title>
+   <link href="http://www.trottercashion.com/2010/04/21/logrotate-for-rails.html"/>
+   <updated>2010-04-21T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/04/21/logrotate-for-rails</id>
+   <content type="html">&lt;h1&gt;Logrotate For Rails&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;April 21, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;http://matschaffer.com&quot;&gt;Mat&lt;/a&gt; and I have been setting up a beta server recently and decided that we should actually rotate our logs. Thankfully, Mat knew enough about &lt;a href=&quot;http://linux.die.net/man/8/logrotate&quot;&gt;logrotate&lt;/a&gt;. Since I didn&amp;#8217;t know jack about logrotate before yesterday, I figure it&amp;#8217;s probably worth explaining to you as well. So without further ado, here&amp;#8217;s our logrotate conf for our rails app:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/srv/our_app/current/log/*.log {
+  daily          # rotate daily
+  rotate 12      # keep twelve copies
+  compress       # gzip the old files
+  missingok      # don't barf if there is no log
+  copytruncate
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The first line tells logrotate where our logs are. The last line tells logrotate to copy the log file then truncate the existing file in place. This is important because rails isn&amp;#8217;t down with flipping the file handle (we think).&lt;/p&gt;
+&lt;p&gt;On a unixy system, place the above text in a file called &lt;code&gt;our_app&lt;/code&gt; in the &lt;code&gt;/etc/logrotate.d&lt;/code&gt; directory. Then make it owned by &lt;code&gt;root&lt;/code&gt;. Logrotate will now rotate your rails logs each night.&lt;/p&gt;
+&lt;p&gt;Neat!&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Philly ETE</title>
+   <link href="http://www.trottercashion.com/2010/04/20/philly-ete.html"/>
+   <updated>2010-04-20T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/04/20/philly-ete</id>
+   <content type="html">&lt;h1&gt;Philly &lt;span class=&quot;caps&quot;&gt;ETE&lt;/span&gt;&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;April 20, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;Two weeks ago, I spoke at &lt;a href=&quot;http://phillyemergingtech.com/&quot;&gt;Philly &lt;span class=&quot;caps&quot;&gt;ETE&lt;/span&gt;&lt;/a&gt;. Let me say here, publicly, that this conference completely rocked. First, the conference organizers picked a &lt;a href=&quot;http://maps.google.com/maps?f=q&amp;amp;source=s_q&amp;amp;hl=en&amp;amp;geocode=&amp;amp;q=Sheraton+hotel+Society+Hill&amp;amp;sll=39.948931,-75.151162&amp;amp;sspn=0.018457,0.037894&amp;amp;ie=UTF8&amp;amp;hq=Sheraton+hotel&amp;amp;hnear=Society+Hill&amp;amp;ll=39.947335,-75.143781&amp;amp;spn=0.008817,0.018947&amp;amp;t=h&amp;amp;z=16&amp;amp;iwloc=A&quot;&gt;great location&lt;/a&gt; in the heart of Philly&amp;#8217;s Old City. Second, they convinced &lt;a href=&quot;http://yehudakatz.com/&quot;&gt;many&lt;/a&gt; &lt;a href=&quot;http://dablog.rubypal.com/&quot;&gt;great&lt;/a&gt; &lt;a href=&quot;http://twitter.com/unclebobmartin&quot;&gt;speakers&lt;/a&gt; from around the country to come speak. Third, they highlighted &lt;a href=&quot;http://cbcg.net/&quot;&gt;excellent&lt;/a&gt; &lt;a href=&quot;http://asymmetrical-view.com/&quot;&gt;local&lt;/a&gt; &lt;a href=&quot;http://www.aaronfeng.com/&quot;&gt;talent&lt;/a&gt;. Finally, they really took care of the speakers and made sure that we had everything we needed.&lt;/p&gt;
+&lt;p&gt;I can&amp;#8217;t stress that last point enough. At many conferences, the speakers are expected to magically appear, give a talk, then disappear to whence they came. With Philly &lt;span class=&quot;caps&quot;&gt;ETE&lt;/span&gt;, the organizers actually offered to get me a hotel room (I declined on account of living twelve blocks from the venue). Touches like this make a good conference great. When a speaker knows he has nothing to worry about, he is free to focus on one thing: crafting a great talk. The only conference I&amp;#8217;ve seen do things better than Philly &lt;span class=&quot;caps&quot;&gt;ETE&lt;/span&gt; in this respect is &lt;a href=&quot;http://www.goruco.com&quot;&gt;Goruco&lt;/a&gt;, which offers speakers both a travel stipend and an honorarium.&lt;/p&gt;
+&lt;p&gt;So, well done Philly &lt;span class=&quot;caps&quot;&gt;ETE&lt;/span&gt;. I really appreciated your committment to making a good conference great and your fantastic selection of talks. I rarely spent time in the hallway track, which is amazing for a conference of your size. I&amp;#8217;ll definitely be back next year, speaking or not.&lt;/p&gt;
+&lt;p&gt;P.S. &amp;#8211; &lt;a href=&quot;http://goruco.stagehq.com/&quot;&gt;Goruco registration&lt;/a&gt; is open now and half sold out. Go buy a ticket. It&amp;#8217;s the best regional ruby conference. Evar.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Separating Content From Style</title>
+   <link href="http://www.trottercashion.com/2010/04/19/separating-content-from-style.html"/>
+   <updated>2010-04-19T00:00:00-07:00</updated>
+   <id>http://www.trottercashion.com/2010/04/19/separating-content-from-style</id>
+   <content type="html">&lt;h1&gt;Separating Content From Style&lt;/h1&gt;
+&lt;p class=&quot;meta&quot;&gt;April 19, 2010 &amp;#8211; Philly&lt;/p&gt;
+&lt;p&gt;The modern web is built around the idea that content should be separated from style. As developers, we learn to write minimalistic html with no style information other than a few classes. This has big maintainability benefits, but I want to focus here on a second benefit. Separating content from style allows you to first focus on what you want to say, then how you want to say it. This is very important.&lt;/p&gt;
+&lt;p&gt;A week and a half ago, I gave a &lt;a href=&quot;http://trotter-chef-ete-phillyrb.heroku.com/&quot;&gt;talk&lt;/a&gt; at &lt;a href=&quot;http://phillyemergingtech.com/&quot;&gt;Philly &lt;span class=&quot;caps&quot;&gt;ETE&lt;/span&gt;&lt;/a&gt; on &lt;a href=&quot;http://wiki.opscode.com/display/chef/Home&quot;&gt;Chef&lt;/a&gt;. As usual, I was stressed the weekend before as I frantically created my talk in Keynote like a good nerd. Beyond the normal stress of doing things last minute, I was also increasingly frustrated by what seemed the never ending style battle my brain was facing. As I laid out new content in keynote, I continually re-arranged it so that it would look &amp;#8220;better&amp;#8221;. I found myself trying out different styles more than I did concentrating on what I wanted to tell my audience. Enter Scott Chacon&amp;#8217;s &lt;a href=&quot;http://github.com/schacon/showoff&quot;&gt;Showoff&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;A few days before my talk preparation hell, my friend &lt;a href=&quot;http://matschaffer.com/&quot;&gt;Mat&lt;/a&gt; mentioned this hot new presentation framework called Showoff. It lets you write your slides in &lt;a href=&quot;http://daringfireball.net/projects/markdown/&quot;&gt;markdown&lt;/a&gt;, which is then translated to html when you run the application. Better yet, all styling is done in &lt;span class=&quot;caps&quot;&gt;CSS&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;This is the important part&lt;/strong&gt;. Showoff separates content from style. It lets me focus on what I want to say, then how I am going to say it.&lt;/p&gt;
+&lt;p&gt;Many people these days forget that the heart of what they&amp;#8217;re doing is communicating ideas. They focus on style over substance. People will eventually see through style and find the substance. Make sure that what you do has substance. Then add your style. Using Showoff reminded me of this lesson, and I really appreciate it.&lt;/p&gt;
+&lt;p&gt;Thanks, Scott.&lt;/p&gt;</content>
+ </entry>
+ 
+ 
+</feed>

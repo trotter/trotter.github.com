@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Introducing Chloe - The Realtime Web Server</title>
+  <link href="http://feeds.feedburner.com/trottercashion" rel="alternate" title="Trotter Cashion" type="application/atom+xml" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
+  <meta name="bitly-verification" content="04b77a0a381e"/>
+</head>
+<body>
+  <div class="header">
+    <h2><a href="/">Trotter Cashion</a></h2>
+  </div>
+  <div class="content">
+    <div id="post">
+  <h1 id='introducing_chloe__the_realtime_web_server'>Introducing Chloe - The Realtime Web Server</h1>
+
+<p>Developing for the realtime web is hard. It&#8217;s not that the concepts are terribly hard, or the coding in particular, rather it&#8217;s the operational difficulties of handling tens of thousands of concurrent requests without having your web server fall over. In an attempt to solve this problem, I&#8217;ve created an open source, realtime web server called <a href='https://github.com/mashion/chloe'>Chloe</a>, which vastly simplifies the problem of connecting your existing web app to the realtime web. It works over WebSockets, but falls back to xhr or long polling when the browser can&#8217;t handle WebSockets. It supports a hybrid of the Socket.IO and Faye APIs, and requires nothing special from your application other than the ability to send and receive HTTP POSTs.</p>
+
+<h2 id='how_it_works'>How It Works</h2>
+
+<p>The beauty of Chloe is that it works wonderfully with absolutely any web framework. Use Rails? We got you covered. Spring? No problem. Node.js? Yea, we can even do that too. The trick is that Chloe handles all the web sockety (and xhr / long polling fallback) bits, and sends an HTTP POST to your web application when new data comes in via the browser. When you want to send data back to the browser, you just send a POST to Chloe. Because Chloe is written in Erlang and uses the Yaws web server, it&#8217;s built from the ground up to handle tens of thousands of simultaneous connections without falling over.</p>
+
+<p>In practical terms, it works like this (ripped straight from the Chloe README). The user&#8217;s browser loads your page <span>1</span>, which instantiates a connection to Chloe using JavaScript. It can then send data over that connection <span>2</span>, which will be relayed to your app via a POST from Chloe <span>3</span>. When you have data that you want to send back to the browser, send a POST to Chloe <span>4</span>, which will relay it back to the connected browser <span>5</span>.</p>
+
+<pre><code>                           2. Send data over websockets
+  +---------------------------------------------------------------------------------------------+
+  |                                                                                             v
++------------------------+  1. /index.html   +----------+  4. POST /send (data for browser)   +-------+
+|        Browser         | ----------------&gt; | Your App | ----------------------------------&gt; | Chloe | -+
++------------------------+                   +----------+                                     +-------+  |
+  ^                                            ^          3. Data from the browser              |        |
+  | 5. Data from your app                      +------------------------------------------------+        |
+  |                                                                                                      |
+  |                                                                                                      |
+  +------------------------------------------------------------------------------------------------------+</code></pre>
+
+<p>Chloe is dead simple to integrate into any existing web application. We recently converted <a href='http://simulchart-rails.heroku.com'>Simulchart</a>, previously written in Node.js, to Rails and Chloe, and it only took a few hours. If you have a look at <a href='https://github.com/mashion/simulchart-rails'>the source</a>, you&#8217;ll see that the Rails code only has to worry about realtime aspects in <a href='https://github.com/mashion/simulchart-rails/blob/master/app/controllers/charts_controller.rb#L30'>one place</a>.</p>
+
+<h2 id='getting_and_running_it'>Getting and Running It</h2>
+
+<p>If you want to see how Chloe works for yourself, I&#8217;d love for you to pull it down and run it. On OSX, this is as easy the following. If you&#8217;re on Ubuntu, we&#8217;ve got packages for you as well. Find the package for you at <a href='https://github.com/mashion/chloe/downloads'>https://github.com/mashion/chloe/downloads</a> and substitute it for the one below.</p>
+<div class='highlight'><pre><code class='bash'>curl -LO <span class='se'>\</span>
+  https://github.com/downloads/mashion/chloe/chloe-0.0.3-osx.tgz
+tar xzvf chloe-0.0.3-osx.tgz
+./chloe-0.0.3/bin/chloe start
+</code></pre>
+</div>
+<p>To check that Chloe is <em>really</em> running, hit <a href='http://localhost:8901'>http://localhost:8901</a>. You should see a simple page telling that it&#8217;s up. To stop the server, just use <code>./chloe-0.0.3/bin/chloe stop</code>.</p>
+
+<p>Of course, just running a Chloe server on its own isn&#8217;t <em>that</em> interesting. So pull down the Chloe source and run the demo app that will let you see how Chloe works.</p>
+<div class='highlight'><pre><code class='bash'>git clone https://github.com/mashion/chloe.git
+ruby support/echo_server.rb
+</code></pre>
+</div>
+<p>Then point your browser at <a href='http://localhost:4567'>http://localhost:4567</a> and see Chloe in action.</p>
+
+<p>To see Chloe at work in a more substantial app, pull down the Simulchart source from <a href='https://github.com/mashion/simulchart.git'>https://github.com/mashion/simulchart.git</a>, get a twitter api key, and run Simulchart locally.</p>
+
+<h2 id='whats_left'>What&#8217;s Left</h2>
+
+<p>Chloe is still in active development, and we&#8217;ve got a number of upcoming features planned. First, we need to authenticate outbound POSTs through Chloe, so that only your application can send data down to the browser. Second, we want to add a number of monitoring hooks to make gauging the health of a running Chloe server super simple. Third, we&#8217;d like to make the installation process even easier. We currently have self-contained binary packages for OSX and Ubuntu, but we&#8217;d love to have legit debian and rpm packages. We also plan to write a homebrew recipe soon to make OSX installs even easier. Fourth, we want to see how the community uses Chloe and improve our API to make the common use cases easier to do. If you want to help with any of these efforts, we&#8217;d love your support. Code is available on github at <a href='https://github.com/mashion/chloe'>https://github.com/mashion/chloe</a>.</p>
+
+<h2 id='learn_more_contribute_give_back'>Learn More, Contribute, Give Back</h2>
+
+<p>If you think Chloe sounds cool, I&#8217;d really appreciate <a href='http://monetateopensource.strutta.com/entry/168161'>your vote</a> in the <a href='http://monetateopensource.strutta.com/entry/168161'>Monetate Open Source Prize</a>. The top prize is $5,000, which we&#8217;ll put directly towards funding additional Chloe development.</p>
+
+<p>If you <em>really</em> think it sounds cool, I&#8217;d love your help developing it. Code is available on github at <a href='https://github.com/mashion/chloe'>https://github.com/mashion/chloe</a>. Patches and forks are always welcome.</p>
+
+<p>FYI, if you liked this post, consider subscribing to <a href='http://feeds.feedburner.com/trottercashion'>my feed</a> for more awesome bits of knowledge.</p>
+
+  <div id="related">
+    <h3>Related Posts</h3>
+    <ul class="posts">
+      
+      <li><span>11 Apr 2011</span> &raquo; <a href="/2011/04/11/use-git-plumbing-for-more-awesome-github-pages.html">Use Git Plumbing For More Awesome Github Pages</a></li>
+      
+      <li><span>08 Feb 2011</span> &raquo; <a href="/2011/02/08/rubys-define_method-method_missing-and-instance_eval.html">Ruby's define_method, method_missing, and instance_eval</a></li>
+      
+      <li><span>12 Aug 2012</span> &raquo; <a href="/2012/08/12/how-to-write-good-log-messages.html">How To Write Good Log Messages</a></li>
+      
+    </ul>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /**
+      * var disqus_identifier; [Optional but recommended: Define a unique identifier (e.g. post id or slug) for this thread] 
+      */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = 'http://trottercashion.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=trottercashion">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Co-founder of <a href="http://mashion.net">Mashion</a></li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <p>
+      <a href="http://feeds.feedburner.com/trottercashion" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="vertical-align:middle;border:0"/></a>
+    </p>
+    <br class="clearing" />
+    
+  </div>
+
+  <!-- google analytics -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3670698-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <!-- get clicky -->
+  <script type="text/javascript">
+  var clicky = { log: function(){ return; }, goal: function(){ return; }};
+  var clicky_site_id = 210101;
+  (function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = ( document.location.protocol == 'https:' ? 'https://static.getclicky.com' : 'http://static.getclicky.com' ) + '/js';
+    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+  })();
+  </script>
+  <a title="Web Analytics" href="http://getclicky.com/210101"></a>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/210101ns.gif" /></p></noscript>
+</body>
+</html>

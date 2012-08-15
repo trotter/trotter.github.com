@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ruby's define_method, method_missing, and instance_eval</title>
+  <link href="http://feeds.feedburner.com/trottercashion" rel="alternate" title="Trotter Cashion" type="application/atom+xml" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
+  <meta name="bitly-verification" content="04b77a0a381e"/>
+</head>
+<body>
+  <div class="header">
+    <h2><a href="/">Trotter Cashion</a></h2>
+  </div>
+  <div class="content">
+    <div id="post">
+  <h1 id='rubys_define_method_method_missing_and_instance_eval'>Ruby&#8217;s define_method, method_missing, and instance_eval</h1>
+<p class='meta'>February 08, 2011 - Philly</p>
+<p>One of the things that I love most about Ruby is that it gets you part of the way to Lisp. Sure, it doesn&#8217;t have full on macros, but it does have a number of totally cool methods that allow you to tighten up your code and ultimately make your programs more maintainable. Three that I really like are <code>define_method</code>, <code>method_missing</code>, and <code>instance_eval</code>. So let&#8217;s have a look.</p>
+
+<h2 id='define_method'>define_method</h2>
+
+<p>Ruby&#8217;s <code>define_method</code> lets you create methods using a method rather than the language builtin <code>def</code>. One major benefit of this is that you can reduce the duplication inherent methods with similar definitions. For example, the following methods all pull data out of an internal hash:</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='c1'># Without define_method:</span>
+    <span class='k'>def</span> <span class='nf'>user</span><span class='p'>;</span>  <span class='vi'>@data</span><span class='o'>[</span><span class='ss'>:user</span><span class='o'>]</span><span class='p'>;</span>  <span class='k'>end</span>
+    <span class='k'>def</span> <span class='nf'>email</span><span class='p'>;</span> <span class='vi'>@data</span><span class='o'>[</span><span class='ss'>:email</span><span class='o'>]</span><span class='p'>;</span> <span class='k'>end</span>
+    <span class='k'>def</span> <span class='nf'>food</span><span class='p'>;</span>  <span class='vi'>@data</span><span class='o'>[</span><span class='ss'>:food</span><span class='o'>]</span><span class='p'>;</span>  <span class='k'>end</span>
+</code></pre>
+</div>
+<p>With <code>define_method</code>, we can iterate over each method name and reduce the duplication like so:</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='c1'># With define_method:</span>
+    <span class='sx'>%w(user email food)</span><span class='o'>.</span><span class='n'>each</span> <span class='k'>do</span> <span class='o'>|</span><span class='n'>meth</span><span class='o'>|</span>
+      <span class='n'>define_method</span><span class='p'>(</span><span class='n'>meth</span><span class='p'>)</span> <span class='p'>{</span> <span class='vi'>@data</span><span class='o'>[</span><span class='n'>meth</span><span class='o'>.</span><span class='n'>to_sym</span><span class='o'>]</span> <span class='p'>}</span>
+    <span class='k'>end</span>
+</code></pre>
+</div>
+<p>Though the above code is the same number of lines as the previous example, it&#8217;s actually easier to maintain than when we defined each method individually. For example, Adding another method is as simple as adding an item to the array. In addition, if we rename our instance variable to <code>@kool_data</code>, we only need to update our accessor methods in one place.</p>
+
+<p>Another neat benefit is that methods created with define_method are actually closures, whereas normal Ruby methods are not. For instance, we could use <code>define_method</code> to allow runtime creation of callback methods like so:</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='k'>class</span> <span class='nc'>Callbacker</span>
+      <span class='k'>def</span> <span class='nf'>make_callback</span><span class='p'>(</span><span class='n'>obj</span><span class='p'>,</span> <span class='n'>meth</span><span class='p'>)</span>
+        <span class='n'>metaclass</span> <span class='o'>=</span> <span class='k'>class</span> <span class='o'>&lt;&lt;</span> <span class='nb'>self</span><span class='p'>;</span> <span class='nb'>self</span><span class='p'>;</span> <span class='k'>end</span>
+        <span class='n'>metaclass</span><span class='o'>.</span><span class='n'>send</span><span class='p'>(</span><span class='ss'>:define_method</span><span class='p'>,</span> <span class='ss'>:callback</span><span class='p'>)</span> <span class='k'>do</span>
+          <span class='n'>obj</span><span class='o'>.</span><span class='n'>send</span><span class='p'>(</span><span class='n'>meth</span><span class='p'>)</span>
+        <span class='k'>end</span>
+      <span class='k'>end</span>
+    <span class='k'>end</span>
+
+    <span class='c1'># usage</span>
+    <span class='n'>callbacker</span> <span class='o'>=</span> <span class='no'>Callbacker</span><span class='o'>.</span><span class='n'>new</span>
+    <span class='n'>callbacker</span><span class='o'>.</span><span class='n'>make_callback</span><span class='p'>(</span><span class='s2'>&quot;   hello   &quot;</span><span class='p'>,</span> <span class='ss'>:strip</span><span class='p'>)</span>
+    <span class='n'>callbacker</span><span class='o'>.</span><span class='n'>callback</span>   <span class='c1'># =&gt; &quot;hello&quot;</span>
+</code></pre>
+</div>
+<p>Sadly, that example is quite contrived, but it&#8217;s all I&#8217;ve got off the top of my head. You&#8217;ll also notice that I&#8217;m calling <code>define_method</code> on the metaclass for the object itself. I have to do this because <code>define_method</code> is defined on <code>Class</code>, not <code>object</code>. By defining it on the metaclass instead of the object&#8217;s class, I can ensure that each object can have its own callback function.</p>
+
+<p>All that said, this example is a little too complex for my taste. If you can think of something better, leave it in the comments. I&#8217;ll update the post with your example and name.</p>
+
+<h2 id='method_missing'>method_missing</h2>
+
+<p>Another cool language feature of Ruby is <code>method_missing</code>. It&#8217;s the feature that puts the magic in <a href='http://rubyonrails.org'>Rails&#8217;s</a> <code>find_by_*</code> methods. You&#8217;ve probably seen them in examples before, but in case you haven&#8217;t, they look like this:</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='no'>Post</span><span class='o'>.</span><span class='n'>find_by_title</span><span class='p'>(</span><span class='s2'>&quot;Awesomeness!&quot;</span><span class='p'>)</span>
+    <span class='no'>User</span><span class='o'>.</span><span class='n'>find_by_email</span><span class='p'>(</span><span class='s2'>&quot;bob@example.com&quot;</span><span class='p'>)</span>
+    <span class='no'>User</span><span class='o'>.</span><span class='n'>find_by_email_and_login</span><span class='p'>(</span><span class='s2'>&quot;bob@example.com&quot;</span><span class='p'>,</span> <span class='s2'>&quot;bob&quot;</span><span class='p'>)</span>
+</code></pre>
+</div>
+<p>Defining all these <code>find_by_*</code> methods by hand is nearly impossible as there&#8217;s a large number of combinations and they&#8217;re based on columns in the database. In conditions like these, <code>method_missing</code> really shines. Let&#8217;s have a look:</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='k'>class</span> <span class='nc'>ActiveRecord</span><span class='o'>::</span><span class='no'>Base</span>
+      <span class='k'>def</span> <span class='nf'>method_missing</span><span class='p'>(</span><span class='n'>meth</span><span class='p'>,</span> <span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>&amp;</span><span class='n'>block</span><span class='p'>)</span>
+        <span class='k'>if</span> <span class='n'>meth</span><span class='o'>.</span><span class='n'>to_s</span> <span class='o'>=~</span> <span class='sr'>/^find_by_(.+)$/</span>
+          <span class='n'>run_find_by_method</span><span class='p'>(</span><span class='vg'>$1</span><span class='p'>,</span> <span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>&amp;</span><span class='n'>block</span><span class='p'>)</span>
+        <span class='k'>else</span>
+          <span class='k'>super</span> <span class='c1'># You *must* call super if you don&#39;t handle the</span>
+                <span class='c1'># method, otherwise you&#39;ll mess up Ruby&#39;s method</span>
+                <span class='c1'># lookup.</span>
+        <span class='k'>end</span>
+      <span class='k'>end</span>
+
+      <span class='k'>def</span> <span class='nf'>run_find_by_method</span><span class='p'>(</span><span class='n'>attrs</span><span class='p'>,</span> <span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>&amp;</span><span class='n'>block</span><span class='p'>)</span>
+        <span class='c1'># Make an array of attribute names</span>
+        <span class='n'>attrs</span> <span class='o'>=</span> <span class='n'>attrs</span><span class='o'>.</span><span class='n'>split</span><span class='p'>(</span><span class='s1'>&#39;_and_&#39;</span><span class='p'>)</span>
+
+        <span class='c1'># #transpose will zip the two arrays together like so:</span>
+        <span class='c1'>#   [[:a, :b, :c], [1, 2, 3]].transpose</span>
+        <span class='c1'>#   # =&gt; [[:a, 1], [:b, 2], [:c, 3]]</span>
+        <span class='n'>attrs_with_args</span> <span class='o'>=</span> <span class='o'>[</span><span class='n'>attrs</span><span class='p'>,</span> <span class='n'>args</span><span class='o'>].</span><span class='n'>transpose</span>
+
+        <span class='c1'># Hash[] will take the passed associative array and turn it</span>
+        <span class='c1'># into a hash like so:</span>
+        <span class='c1'>#   Hash[[[:a, 2], [:b, 4]]] # =&gt; { :a =&gt; 2, :b =&gt; 4 }</span>
+        <span class='n'>conditions</span> <span class='o'>=</span> <span class='no'>Hash</span><span class='o'>[</span><span class='n'>attrs_with_args</span><span class='o'>]</span>
+
+        <span class='c1'># #where and #all are new AREL goodness that will find all</span>
+        <span class='c1'># records matching our conditions</span>
+        <span class='n'>where</span><span class='p'>(</span><span class='n'>conditions</span><span class='p'>)</span><span class='o'>.</span><span class='n'>all</span>
+      <span class='k'>end</span>
+    <span class='k'>end</span>
+</code></pre>
+</div>
+<p>Though there&#8217;s a lot to the code above, the <em>most</em> important bit is in the method missing. Here we use a regex to match anything starting with &#8216;find_by_&#8217; and delegate those to <code>run_find_by_method</code>.</p>
+
+<p>There are three very important caveats to using <code>method_missing</code>. First, you <em>must</em> call <code>super</code> if you don&#8217;t plan on handling the given method. If you fail to call <code>super</code>, you will short circuit Ruby&#8217;s method lookup and your code will behave strangely.</p>
+
+<p>Second, methods executed via <code>method_missing</code> are slower than their normally defined counterparts. I don&#8217;t have hard numbers on this, but googling around may be able to tell you. If it doesn&#8217;t, let me know in the comments, and I&#8217;ll get numbers.</p>
+
+<p>Finally, you <em>should</em> also define a corresponding <code>respond_to?</code> that reflects that your object responds to these magic methods. For our example above, the <code>respond_to?</code> would look like so:</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='k'>class</span> <span class='nc'>ActiveRecord</span><span class='o'>::</span><span class='no'>Base</span>
+      <span class='k'>def</span> <span class='nf'>respond_to?</span><span class='p'>(</span><span class='n'>meth</span><span class='p'>)</span>
+        <span class='k'>if</span> <span class='n'>meth</span><span class='o'>.</span><span class='n'>to_s</span> <span class='o'>=~</span> <span class='sr'>/^find_by_.*$/</span>
+          <span class='kp'>true</span>
+        <span class='k'>else</span>
+          <span class='k'>super</span>
+        <span class='k'>end</span>
+      <span class='k'>end</span>
+    <span class='k'>end</span>
+</code></pre>
+</div>
+<p>Though <code>respond_to?</code> is not used heavily in practice, it <em>is</em> a core component of duck typing checks. Therefore, it&#8217;s usually a good idea to make sure your <code>respond_to?</code> matches your <code>method_missing</code>.</p>
+
+<h2 id='instance_eval'>instance_eval</h2>
+
+<p>The final feature we&#8217;ll look at today is <code>instance_eval</code>. It&#8217;s very much a swiss army knife of a tool, but it really shines in its DSL supporting role. For instance, take the <a href='http://wiki.opscode.com/display/chef/Home'>Chef API&#8217;s</a> approach to setting up File Templates:</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='n'>template</span> <span class='s2'>&quot;/path/to/file.conf&quot;</span> <span class='k'>do</span>
+      <span class='n'>source</span> <span class='s2'>&quot;file.conf.erb&quot;</span>
+      <span class='n'>owner</span>  <span class='s2'>&quot;trotter&quot;</span>
+      <span class='n'>mode</span>   <span class='s2'>&quot;0755&quot;</span>
+    <span class='k'>end</span>
+</code></pre>
+</div>
+<p>Within the <code>template</code> method, we have access to <code>source</code>, <code>owner</code>, and <code>mode</code> methods that are unavailable outside <code>template</code>. To make this work, we must execute the block passed to <code>template</code> within a context where <code>source</code>, <code>owner</code>, and <code>mode</code> are defined. With <code>instance_eval</code>, this is possible, and we could implement the Chef DSL like so:</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='k'>class</span> <span class='nc'>ChefDSL</span>
+      <span class='k'>def</span> <span class='nf'>template</span><span class='p'>(</span><span class='n'>path</span><span class='p'>,</span> <span class='o'>&amp;</span><span class='n'>block</span><span class='p'>)</span>
+        <span class='no'>TemplateDSL</span><span class='o'>.</span><span class='n'>new</span><span class='p'>(</span><span class='n'>path</span><span class='p'>,</span> <span class='o'>&amp;</span><span class='n'>block</span><span class='p'>)</span>
+      <span class='k'>end</span>
+    <span class='k'>end</span>
+
+    <span class='k'>class</span> <span class='nc'>TemplateDSL</span>
+      <span class='k'>def</span> <span class='nf'>initialize</span><span class='p'>(</span><span class='n'>path</span><span class='p'>,</span> <span class='o'>&amp;</span><span class='n'>block</span><span class='p'>)</span>
+        <span class='vi'>@path</span> <span class='o'>=</span> <span class='n'>path</span>
+        <span class='nb'>instance_eval</span> <span class='o'>&amp;</span><span class='n'>block</span>
+      <span class='k'>end</span>
+
+      <span class='k'>def</span> <span class='nf'>source</span><span class='p'>(</span><span class='n'>source</span><span class='p'>);</span> <span class='vi'>@source</span> <span class='o'>=</span> <span class='n'>source</span><span class='p'>;</span> <span class='k'>end</span>
+      <span class='k'>def</span> <span class='nf'>owner</span><span class='p'>(</span><span class='n'>owner</span><span class='p'>);</span>   <span class='vi'>@owner</span>  <span class='o'>=</span> <span class='n'>owner</span><span class='p'>;</span>  <span class='k'>end</span>
+      <span class='k'>def</span> <span class='nf'>mode</span><span class='p'>(</span><span class='n'>mode</span><span class='p'>);</span>     <span class='vi'>@mode</span>   <span class='o'>=</span> <span class='n'>mode</span><span class='p'>;</span>   <span class='k'>end</span>
+    <span class='k'>end</span>
+</code></pre>
+</div>
+<p>The real trick to the above code is the <code>instance_eval</code> in <code>TemplateDSL</code>. It takes the supplied block and runs it within the scope of a <code>TemplateDSL</code> object. This means that the block has access to the <code>source</code>, <code>owner</code>, and <code>mode</code> methods of <code>TemplateDSL</code>, which it uses to set the appropriate instance variables.</p>
+
+<p>If in the above example we had not used <code>instance_eval</code> and had instead defined <code>TemplateDSL#initialize</code> as follows, then Ruby would raise a <code>NoMethodError</code>, because the <code>source</code>, <code>owner</code>, and <code>mode</code> methods would not be accessible to the block.</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='k'>class</span> <span class='nc'>TemplateDSL</span>
+      <span class='k'>def</span> <span class='nf'>initialize</span><span class='p'>(</span><span class='n'>path</span><span class='p'>,</span> <span class='o'>&amp;</span><span class='n'>block</span><span class='p'>)</span>
+        <span class='vi'>@path</span> <span class='o'>=</span> <span class='n'>path</span>
+        <span class='n'>block</span><span class='o'>.</span><span class='n'>call</span>
+      <span class='k'>end</span>
+    <span class='k'>end</span>
+</code></pre>
+</div>
+<h2 id='phillyrb'>Philly.rb</h2>
+
+<p>Hopefully this post helps you see why I think Ruby is such a cool language. If you&#8217;re in the Philly area, I&#8217;m giving a lightening talk at tonight&#8217;s <a href='http://phillyrb.org'>Philly.rb</a> meeting on this sort of Ruby &#8220;meta magic&#8221;. I&#8217;d love to see you there!</p>
+
+  <div id="related">
+    <h3>Related Posts</h3>
+    <ul class="posts">
+      
+      <li><span>27 Apr 2010</span> &raquo; <a href="/2010/04/27/headless-raphael-testing.html">Headless Raphael Testing</a></li>
+      
+      <li><span>11 Apr 2011</span> &raquo; <a href="/2011/04/11/use-git-plumbing-for-more-awesome-github-pages.html">Use Git Plumbing For More Awesome Github Pages</a></li>
+      
+      <li><span>13 Jun 2011</span> &raquo; <a href="/2011/06/13/introducing-chloe.html">Introducing Chloe - The Realtime Web Server</a></li>
+      
+    </ul>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /**
+      * var disqus_identifier; [Optional but recommended: Define a unique identifier (e.g. post id or slug) for this thread] 
+      */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = 'http://trottercashion.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=trottercashion">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Co-founder of <a href="http://mashion.net">Mashion</a></li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <p>
+      <a href="http://feeds.feedburner.com/trottercashion" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="vertical-align:middle;border:0"/></a>
+    </p>
+    <br class="clearing" />
+    
+  </div>
+
+  <!-- google analytics -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3670698-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <!-- get clicky -->
+  <script type="text/javascript">
+  var clicky = { log: function(){ return; }, goal: function(){ return; }};
+  var clicky_site_id = 210101;
+  (function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = ( document.location.protocol == 'https:' ? 'https://static.getclicky.com' : 'http://static.getclicky.com' ) + '/js';
+    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+  })();
+  </script>
+  <a title="Web Analytics" href="http://getclicky.com/210101"></a>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/210101ns.gif" /></p></noscript>
+</body>
+</html>

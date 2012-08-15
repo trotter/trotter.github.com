@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simulchart: Realtime charts for everyone</title>
+  <link href="http://feeds.feedburner.com/trottercashion" rel="alternate" title="Trotter Cashion" type="application/atom+xml" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
+  <meta name="bitly-verification" content="04b77a0a381e"/>
+</head>
+<body>
+  <div class="header">
+    <h2><a href="/">Trotter Cashion</a></h2>
+  </div>
+  <div class="content">
+    <div id="post">
+  <h1 id='simulchart_realtime_charts_for_everyone'>Simulchart: Realtime charts for everyone</h1>
+
+<p>This past weekend was <a href='http://nodeknockout.com/'>node knockout</a>, so @matschaffer and @thoughtmerchant and I teamed up to create <a href='http://simulchart.com/'>Simulchart</a>, a platform for creating realtime charts that you can embed anywhere:</p>
+<iframe frameBorder='0' src='http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/iframe?width=700&amp;height=200' style='width: 700px; height: 200px;'> </iframe>
+<h2 id='sending_data'>Sending Data</h2>
+
+<p>What I really like about Simulcharts is how easy it is to send data to the chart. To change the values in the chart above, all you need to do is run the following on your command line:</p>
+
+<pre><code>curl -d value=342 \
+  http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/appendValue</code></pre>
+
+<p>That will send send a <code>POST</code> to <code>http://www.simulchart.com/graphs/4c8faf7f5415bf7d43000003/appendValue</code> with a post body of <code>value=342</code>. If you run that command right now, you will see the chart move.</p>
+
+<p>Alternately, you could write a Ruby, Java, Python, or whatever program to monitor any information you care about and post it to that url. Then embed the chart on a dashboard page and watch all your metrics as they fly by. The chart is highly customizable, but only width and height customization options are currently exposed (sorry, we only had the weekend). When the code freeze for node knockout is over, we&#8217;ll update it to allow for more tweaking.</p>
+
+<h2 id='we_rock'>We Rock</h2>
+
+<p>Overall, I&#8217;m really proud of what we managed to accomplish in just one weekend. My team was rock solid, and I think our entry will only improve as a product over time. Sadly, we did run into a few scaling issues with node, which we were never able to fully figure out. So if you&#8217;re not seeing a graph, be sure to reload the page. It&#8217;ll show up after a few requests.</p>
+
+<p>If you like what we made, please, please vote us highly one our <a href='http://nodeknockout.com/teams/awesometown'>team page</a>. We really appreciate your support, and your votes will help us validate that Simulcharts is something we should develop further. Also, look forward to more posts this week about how we implemented certain features and how to do a system load chart like we have on our <a href='http://simulchart.com/demos'>demo page</a>.</p>
+
+  <div id="related">
+    <h3>Related Posts</h3>
+    <ul class="posts">
+      
+      <li><span>13 Jun 2011</span> &raquo; <a href="/2011/06/13/introducing-chloe.html">Introducing Chloe - The Realtime Web Server</a></li>
+      
+      <li><span>12 Aug 2012</span> &raquo; <a href="/2012/08/12/how-to-write-good-log-messages.html">How To Write Good Log Messages</a></li>
+      
+      <li><span>26 Oct 2010</span> &raquo; <a href="/2010/10/26/crowd-sourcing-business-development.html">Crowd Sourcing Business Development</a></li>
+      
+    </ul>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /**
+      * var disqus_identifier; [Optional but recommended: Define a unique identifier (e.g. post id or slug) for this thread] 
+      */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = 'http://trottercashion.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=trottercashion">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Co-founder of <a href="http://mashion.net">Mashion</a></li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <p>
+      <a href="http://feeds.feedburner.com/trottercashion" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="vertical-align:middle;border:0"/></a>
+    </p>
+    <br class="clearing" />
+    
+  </div>
+
+  <!-- google analytics -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3670698-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <!-- get clicky -->
+  <script type="text/javascript">
+  var clicky = { log: function(){ return; }, goal: function(){ return; }};
+  var clicky_site_id = 210101;
+  (function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = ( document.location.protocol == 'https:' ? 'https://static.getclicky.com' : 'http://static.getclicky.com' ) + '/js';
+    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+  })();
+  </script>
+  <a title="Web Analytics" href="http://getclicky.com/210101"></a>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/210101ns.gif" /></p></noscript>
+</body>
+</html>

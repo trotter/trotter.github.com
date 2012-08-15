@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chuusha - Share Variables Across CSS and Javascript</title>
+  <link href="http://feeds.feedburner.com/trottercashion" rel="alternate" title="Trotter Cashion" type="application/atom+xml" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
+  <meta name="bitly-verification" content="04b77a0a381e"/>
+</head>
+<body>
+  <div class="header">
+    <h2><a href="/">Trotter Cashion</a></h2>
+  </div>
+  <div class="content">
+    <div id="post">
+  <h1>Chuusha &#8211; Share Variables Across <span class="caps">CSS</span> and Javascript</h1>
+<p class="meta">April 29, 2010 &#8211; Philly</p>
+<p><span class="caps">CSS</span> doesn&#8217;t have variables. This probably doesn&#8217;t come as news to you, and I&#8217;m sure you&#8217;ve felt the pain. Even worse is that I&#8217;m doing a lot of drawing using Raphael, and I have color and size constants that are hardcoded in both <span class="caps">CSS</span> and JavaScript. It&#8217;s really brittle, and brittle is bad.</p>
+<p>So how can we fix this problem? <a href="http://sass-lang.com/">Sass</a> is one option, and it&#8217;s pretty damn sweet. Sadly, it too can&#8217;t share variables with JavaScript, and it&#8217;s ever so slightly divergent from <span class="caps">CSS</span>. I don&#8217;t like forcing my team members (especially the designery types) to learn too many new things. So like any good developer, I wrote my own library! (Be sure to read that last sentence with all the sarcasm it deserves). Don&#8217;t worry though, you won&#8217;t have to learn anything new to use it.</p>
+<p><a href="http://github.com/trotter/chuusha">Chuusha</a> is <a href="http://rack.rubyforge.org/">Rack</a> middleware that pre-renders css and javascript erb templates. Erb is the default templating engine for Rails, which means that if you can do rails views, you can use Chuusha. All you need to do is change your file extension from <code>.css</code> or <code>.js</code> to <code>.css.erb</code> or <code>.js.erb</code> (to be honest, anything in public with a <code>.erb</code> can be rendered with Chuusha). So let&#8217;s have a look at what this means with a simple template:</p>
+<div class="highlight"><pre><code class="css"><span class="c">/* ./public/stylesheets/application.css.erb */</span>
+
+<span class="o">&lt;%</span> <span class="nt">highlight_color</span> <span class="o">=</span> <span class="s2">&quot;#3c3cff&quot;</span> <span class="o">%&gt;</span>
+
+<span class="nt">p</span><span class="nc">.highlight</span> <span class="p">{</span>
+  <span class="k">color</span><span class="o">:</span> <span class="o">&lt;%=</span> <span class="n">highlight_color</span> <span class="o">%&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">img</span><span class="nc">.highlight</span> <span class="p">{</span>
+  <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="o">&lt;%</span> <span class="n">highlight_color</span> <span class="o">%&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+<p>As you can see, we&#8217;re able to share <code>highlight_color</code> (a nice shade of blue), with two different elements in our stylesheet. Of course, this doesn&#8217;t show off sharing <code>highlight_color</code> with anything in javascript. For that, we need to take a look at how Chuusha gets loaded:</p>
+<div class="highlight"><pre><code class="ruby"><span class="c1"># ./config.ru</span>
+
+<span class="nb">require</span> <span class="s1">&#39;chuusha&#39;</span>
+<span class="no">PUBLIC_DIR</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/public&#39;</span>
+<span class="n">use</span> <span class="no">Chuusha</span><span class="o">::</span><span class="no">Rack</span><span class="p">,</span> <span class="no">PUBLIC_DIR</span><span class="p">,</span>
+    <span class="p">{</span> <span class="ss">:variables</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:highlight_color</span> <span class="o">=&gt;</span> <span class="s2">&quot;#3c3cff&quot;</span> <span class="p">}}</span>
+<span class="n">run</span> <span class="no">Rack</span><span class="o">::</span><span class="no">URLMap</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="o">=&gt;</span> <span class="no">YOUR_RAILS_APP</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>Here, we&#8217;re passing a configuration hash to Chuusha. This hash contains a variables key, which we can use to store a set of constants that we want to share between css and javascript.</p>
+<p>With Chuusha properly loaded, we can now use <code>highlight_color</code> in any of our templates like so:</p>
+<div class="highlight"><pre><code class="js"><span class="c1">// ./public/javascripts/application.js.erb</span>
+
+<span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">(</span><span class="s2">&quot;draw-here&quot;</span><span class="p">),</span>      <span class="c1">// Init Raphael</span>
+    <span class="nx">rect</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">rect</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="c1">// Make a 50x50 rect</span>
+    <span class="nx">rect</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span><span class="s2">&quot;fill&quot;</span><span class="o">:</span> <span class="o">&lt;%</span> <span class="nx">highlight_color</span> <span class="o">%&gt;</span><span class="p">})</span> <span class="c1">// Color it</span>
+</code></pre>
+</div>
+<div class="highlight"><pre><code class="css"><span class="c">/* ./public/stylesheets/application.css.erb */</span>
+
+<span class="nt">p</span><span class="nc">.highlight</span> <span class="p">{</span>
+  <span class="k">color</span><span class="o">:</span> <span class="o">&lt;%=</span> <span class="n">highlight_color</span> <span class="o">%&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">img</span><span class="nc">.highlight</span> <span class="p">{</span>
+  <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="o">&lt;%</span> <span class="n">highlight_color</span> <span class="o">%&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+<p>In this example, we&#8217;ve shared <code>highlight_color</code> from our configuration file with both <code>application.js</code> and <code>application.css.erb</code>. Instead of hardcoding <code>#3c3cff</code> in three places, we&#8217;ve reduced it down to one. If a designer comes along later and asks us to change the highlight color, we know where to go :-)</p>
+<p>As the configuration hash grows in size, it&#8217;s good to put it somewhere other than in your rackup config. For this reason, Chuusha can also accept a path to a yaml configuration doc via a string:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">use</span> <span class="no">Chuusha</span><span class="o">::</span><span class="no">Rack</span><span class="p">,</span> <span class="no">PUBLIC_DIR</span><span class="p">,</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/chuusha.yml&#39;</span>
+</code></pre>
+</div>
+<p>&#8230; and the yaml&#8230;</p>
+<div class="highlight"><pre><code class="yaml"><span class="c1"># ./chuusha.yml</span>
+
+<span class="l-Scalar-Plain">variables</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">highlight_color</span><span class="p-Indicator">:</span> <span class="s">&quot;#3c3cff&quot;</span>
+</code></pre>
+</div>
+<p>To install Chuusha and start using it today, you only need to install the gem (shown below) and setup your rack config. Only files with a <code>.erb</code> extension will be processed, so you can dip your toe in the water before using it everywhere.</p>
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span>gem install chuusha
+</code></pre>
+</div>
+<p>So that&#8217;s Chuusha. Let me know what you think. I&#8217;ve got a number of enhancements in mind for the next few weeks (the first of which is a command line runner to make integration with js testing easier). The <a href="http://github.com/trotter/chuusha">code&#8217;s on github</a>, so feel free to fork it and send me pull requests.</p>
+
+  <div id="related">
+    <h3>Related Posts</h3>
+    <ul class="posts">
+      
+      <li><span>08 Feb 2011</span> &raquo; <a href="/2011/02/08/rubys-define_method-method_missing-and-instance_eval.html">Ruby's define_method, method_missing, and instance_eval</a></li>
+      
+      <li><span>27 Apr 2010</span> &raquo; <a href="/2010/04/27/headless-raphael-testing.html">Headless Raphael Testing</a></li>
+      
+      <li><span>11 Apr 2011</span> &raquo; <a href="/2011/04/11/use-git-plumbing-for-more-awesome-github-pages.html">Use Git Plumbing For More Awesome Github Pages</a></li>
+      
+    </ul>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /**
+      * var disqus_identifier; [Optional but recommended: Define a unique identifier (e.g. post id or slug) for this thread] 
+      */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = 'http://trottercashion.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=trottercashion">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Co-founder of <a href="http://mashion.net">Mashion</a></li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <p>
+      <a href="http://feeds.feedburner.com/trottercashion" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="vertical-align:middle;border:0"/></a>
+    </p>
+    <br class="clearing" />
+    
+  </div>
+
+  <!-- google analytics -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3670698-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <!-- get clicky -->
+  <script type="text/javascript">
+  var clicky = { log: function(){ return; }, goal: function(){ return; }};
+  var clicky_site_id = 210101;
+  (function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = ( document.location.protocol == 'https:' ? 'https://static.getclicky.com' : 'http://static.getclicky.com' ) + '/js';
+    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+  })();
+  </script>
+  <a title="Web Analytics" href="http://getclicky.com/210101"></a>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/210101ns.gif" /></p></noscript>
+</body>
+</html>

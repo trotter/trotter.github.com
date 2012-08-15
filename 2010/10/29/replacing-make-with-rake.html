@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Replacing Make With Rake</title>
+  <link href="http://feeds.feedburner.com/trottercashion" rel="alternate" title="Trotter Cashion" type="application/atom+xml" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="/css/application.css" type="text/css" media="screen">
+  <meta name="bitly-verification" content="04b77a0a381e"/>
+</head>
+<body>
+  <div class="header">
+    <h2><a href="/">Trotter Cashion</a></h2>
+  </div>
+  <div class="content">
+    <div id="post">
+  <h1 id='replacing_make_with_rake'>Replacing Make With Rake</h1>
+<p class='meta'>October 29, 2010 - Philly</p>
+<p>I&#8217;ve been playing with Erlang again lately, and decided to go back through <a href='http://pragprog.com/titles/jaerlang/programming-erlang'>Joe Armstrong&#8217;s book</a> from a few years ago. In chapter 6 of his book, Joe shows how to compile an Erlang program using the classic <code>make</code> tool. Naturally, this got me thinking about implementing his code in the Ruby alternative to <code>make</code>, <code>rake</code>.</p>
+
+<h2 id='not_just_for_tasks'>Not Just For Tasks</h2>
+
+<p>Those of you that think Rake can only be used to define tasks should really take a look at the <a href='http://docs.rubyrake.org/'>documentation</a>. In the same way that you use Rake to define a task, you can use it to generate a file according to a rule. The following code will look regenerate <code>trotter.beam</code> anytime that <code>trotter.erl</code> changes.</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='n'>file</span> <span class='s1'>&#39;trotter.beam&#39;</span> <span class='o'>=&gt;</span> <span class='s1'>&#39;trotter.erl&#39;</span> <span class='k'>do</span>
+      <span class='n'>sh</span> <span class='s1'>&#39;erlc trotterl.erl&#39;</span>
+    <span class='k'>end</span>
+</code></pre>
+</div>
+<p>Of course, if I&#8217;m compiling one file, then I&#8217;m probably compiling many. For these cases we use the <code>rule</code> method. The following code regenerate any beam file when its corresponding erl file has changed.</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='n'>rule</span> <span class='s1'>&#39;.beam&#39;</span> <span class='o'>=&gt;</span> <span class='s1'>&#39;.erl&#39;</span> <span class='k'>do</span> <span class='o'>|</span><span class='n'>t</span><span class='o'>|</span>
+      <span class='n'>sh</span> <span class='s2'>&quot;erlc </span><span class='si'>#{</span><span class='n'>t</span><span class='o'>.</span><span class='n'>source</span><span class='si'>}</span><span class='s2'>&quot;</span>
+    <span class='k'>end</span>
+</code></pre>
+</div>
+<h2 id='cleaning_up_after_yourself'>Cleaning Up After Yourself</h2>
+
+<p>That&#8217;s pretty cool, but now we have a metric ass-ton of <code>*.beam</code> files laying around our directory. Thankfully, Rake makes it pretty easy to clean up a lot of files as well. Just require <code>rake/clean</code> and add necessary files to the <code>CLEAN</code> constant.</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='nb'>require</span> <span class='s1'>&#39;rake/clean&#39;</span>
+    <span class='no'>CLEAN</span><span class='o'>.</span><span class='n'>include</span><span class='p'>(</span><span class='s1'>&#39;*.beam&#39;</span><span class='p'>)</span>
+</code></pre>
+</div>
+<h2 id='putting_it_all_together'>Putting It All Together</h2>
+
+<p>Putting this all together, we can make a Rakefile that will compile all the Erlang code that I&#8217;m writing while working through this book.</p>
+<div class='highlight'><pre><code class='ruby'>    <span class='nb'>require</span> <span class='s1'>&#39;rake/clean&#39;</span>
+
+    <span class='no'>CLEAN</span><span class='o'>.</span><span class='n'>include</span><span class='p'>(</span><span class='s1'>&#39;*.beam&#39;</span><span class='p'>)</span>
+    <span class='no'>ERLS</span>  <span class='o'>=</span> <span class='no'>FileList</span><span class='o'>[</span><span class='s1'>&#39;*.erl&#39;</span><span class='o'>]</span>
+    <span class='no'>BEAMS</span> <span class='o'>=</span> <span class='no'>ERLS</span><span class='o'>.</span><span class='n'>ext</span><span class='p'>(</span><span class='s1'>&#39;.beam&#39;</span><span class='p'>)</span> 
+
+    <span class='n'>rule</span> <span class='s1'>&#39;.beam&#39;</span> <span class='o'>=&gt;</span> <span class='s1'>&#39;.erl&#39;</span> <span class='k'>do</span> <span class='o'>|</span><span class='n'>t</span><span class='o'>|</span>
+      <span class='n'>sh</span> <span class='s2'>&quot;erlc </span><span class='si'>#{</span><span class='n'>t</span><span class='o'>.</span><span class='n'>source</span><span class='si'>}</span><span class='s2'>&quot;</span>
+    <span class='k'>end</span>
+
+    <span class='n'>task</span> <span class='ss'>:default</span> <span class='o'>=&gt;</span> <span class='no'>BEAMS</span>
+</code></pre>
+</div>
+<p>Here I&#8217;ve defined a default task that depends on all <code>.beam</code> files, which in turn depend on all the <code>.erl</code> files. Running <code>rake</code> will cause Rake to check the compile time of each <code>.beam</code> against its corresponding <code>.erl</code> file and recompile if necessary. When I&#8217;m done messing around, a simple <code>rake clean</code> will clear out all the <code>.beam</code> files, but leave all the <code>.erl</code> files intact.</p>
+
+<p>I hope I&#8217;ve shown you that Rake is good for more than just putting together sets of tasks. When you&#8217;re working in a system where you need to generate files on disk, Rake offers some wonderful tools for you.</p>
+
+  <div id="related">
+    <h3>Related Posts</h3>
+    <ul class="posts">
+      
+      <li><span>11 Apr 2011</span> &raquo; <a href="/2011/04/11/use-git-plumbing-for-more-awesome-github-pages.html">Use Git Plumbing For More Awesome Github Pages</a></li>
+      
+      <li><span>08 Feb 2011</span> &raquo; <a href="/2011/02/08/rubys-define_method-method_missing-and-instance_eval.html">Ruby's define_method, method_missing, and instance_eval</a></li>
+      
+      <li><span>27 Apr 2010</span> &raquo; <a href="/2010/04/27/headless-raphael-testing.html">Headless Raphael Testing</a></li>
+      
+    </ul>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /**
+      * var disqus_identifier; [Optional but recommended: Define a unique identifier (e.g. post id or slug) for this thread] 
+      */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = 'http://trottercashion.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=trottercashion">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+  <div class="footer">
+    <ul class="about">
+      <li>Trotter Cashion</li>
+      <li>Co-founder of <a href="http://mashion.net">Mashion</a></li>
+      <li>cashion@gmail.com</li>
+    </ul>
+    <ul class="contact">
+      <li><a href="http://github.com/trotter">github.com/trotter</a></li>
+      <li><a href="http://twitter.com/cashion">twitter.com/cashion</a></li>
+      <li><a href="http://speakerrate.com/trotter">speakerrate.com/trotter</a></li>
+    </ul>
+    <p>
+      <a href="http://feeds.feedburner.com/trottercashion" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="vertical-align:middle;border:0"/></a>
+    </p>
+    <br class="clearing" />
+    
+  </div>
+
+  <!-- google analytics -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3670698-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <!-- get clicky -->
+  <script type="text/javascript">
+  var clicky = { log: function(){ return; }, goal: function(){ return; }};
+  var clicky_site_id = 210101;
+  (function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = ( document.location.protocol == 'https:' ? 'https://static.getclicky.com' : 'http://static.getclicky.com' ) + '/js';
+    ( document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0] ).appendChild( s );
+  })();
+  </script>
+  <a title="Web Analytics" href="http://getclicky.com/210101"></a>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/210101ns.gif" /></p></noscript>
+</body>
+</html>
