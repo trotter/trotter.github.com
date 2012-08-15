@@ -13,7 +13,7 @@ They include snarky comments, lack any indication of what was going on, and
 sometimes do not even include the current time. Based on my experience, a good
 log message looks like this (wrapped for clarity):
 
-    INFO 08-08-2012-20:27:59 blog1.trottercashion.com 4537 10.21.7.50 \
+    INFO 2012-09-20T20:27:59Z blog1.trottercashion.com 4537 10.21.7.50 \
       app/models/post.rb:75 5cc6e4238e6b76207825e14924a96d59f5c82c19 \
       post_id=543;blog_id=4 Loading Post
 
@@ -26,7 +26,9 @@ I'll give a brief description of this component's purpose.
 **level** - INFO - This is the log level for your logger. It gives you an idea
 of the importance of a message at a quick glance.
 
-**time** - 08-08-2012-20:27:59 - The current time, preferably in UTC.
+**time** - 2012-09-20T20:27:59Z - The current time in [ISO-8601
+format](http://en.wikipedia.org/wiki/ISO_8601). Your date will be yyyy-mm-dd,
+and the Z at the end of the time signifies that this is UTC time.
 
 **host** - blog1.trottercashion.com - The hostname for the server. When you
 start agregating logs from many hosts together, this lets you know which box
@@ -83,3 +85,6 @@ in code, use whatever you want for location.
 So what are your thoughts on log messages? If I've left out anything that you
 find particularly important, please let me know in the comments. I'm always
 looking for ways to improve my logging.
+
+**Update** - I updated the time to use ISO-8601. As pointed out in the
+comments, it's a much clearer way to specify the time and it sorts lexically.
